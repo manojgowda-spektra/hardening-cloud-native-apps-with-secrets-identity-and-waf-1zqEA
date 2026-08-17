@@ -1,0 +1,12 @@
+{
+  "name": "Hardening Cloud-Native Apps with Secrets, Identity, and WAF",
+  "cloud": "azure",
+  "level": "Advanced",
+  "deploymentDurationMinutes": 240,
+  "enableLabValidation": true,
+  "hasInlineQuestions": true,
+  "customPolicy": true,
+  "customRbacRole": false,
+  "cloudScope": null,
+  "policyPack": null
+}
