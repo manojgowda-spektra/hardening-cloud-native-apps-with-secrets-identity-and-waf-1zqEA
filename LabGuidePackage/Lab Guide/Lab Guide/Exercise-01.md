@@ -76,9 +76,9 @@ In this task, you will sign in to Azure, find the Zava Retail resource group for
 7. Confirm the insecure starting state. The `/health` endpoint should succeed, and `/config-status` should report a local source.
 
    ```bash
-   curl -i "http://$VM_PIP/health"
+   curl -iL "http://$VM_PIP/health"
    echo
-   curl -i "http://$VM_PIP/config-status"
+   curl -iL "http://$VM_PIP/config-status"
    ```
 
 8. Inspect the CSE-created local configuration files on the VM. This command reads the actual Zava Retail files created during deployment and prints only the evidence you need, without requiring Remote Desktop.
@@ -88,27 +88,29 @@ In this task, you will sign in to Azure, find the Zava Retail resource group for
      --resource-group "$RG" \
      --name "$VM_NAME" \
      --command-id RunPowerShellScript \
-     --scripts @'
+     --scripts '
    $files = @(
-     'C:\ZavaRetail\Config\plaintext-connection-string.txt',
-     'C:\ZavaRetail\Config\zava-config.json'
+     "C:\ZavaRetail\Config\plaintext-connection-string.txt",
+     "C:\ZavaRetail\Config\zava-config.json"
    )
 
    foreach ($file in $files) {
      if (Test-Path $file) {
        Write-Host "Found file: $file"
-       if ($file -like '*plaintext-connection-string.txt') {
-         Get-Content -Path $file | Select-String -Pattern 'ZavaAppConnectionString|Server=|Database=|ConnectionString'
+       if ($file -like "*plaintext-connection-string.txt") {
+         Get-Content -Path $file | Select-String -Pattern "ZavaAppConnectionString|Server=|Database=|ConnectionString"
        }
        else {
-         Get-Content -Path $file | Select-String -Pattern 'Source|Local|KeyVault|VaultName|SecretName|LastUpdated'
+         Get-Content -Path $file | Select-String -Pattern "Source|Local|KeyVault|VaultName|SecretName|LastUpdated"
        }
      }
      else {
        Write-Host "Missing expected file: $file"
      }
    }
-   '@
+   ' \
+     --query "value[].message" \
+     -o tsv
    ```
 
    Successful output should show the sample connection string from `C:\ZavaRetail\Config\plaintext-connection-string.txt` and configuration metadata from `C:\ZavaRetail\Config\zava-config.json`, including `Source` set to `Local`.
@@ -322,9 +324,9 @@ In this task, you will use the prepared Zava Retail helper on the VM to change t
 3. Inspect the app status through the direct VM endpoint. Direct VM HTTP is still intentionally open in Exercise 1; you will remove direct exposure after Application Gateway is deployed in a later exercise.
 
    ```bash
-   curl -i "http://$VM_PIP/health"
+   curl -iL "http://$VM_PIP/health"
    echo
-   curl -i "http://$VM_PIP/config-status"
+   curl -iL "http://$VM_PIP/config-status"
    ```
 
    The `/health` response should succeed. The `/config-status` response should report `KeyVault` and must not reveal the connection string value.
@@ -389,9 +391,9 @@ In this task, you will gather the evidence required for the Exercise 1 validatio
 5. Confirm application health and source status one more time.
 
    ```bash
-   curl -s "http://$VM_PIP/health"
+   curl -sL "http://$VM_PIP/health"
    echo
-   curl -s "http://$VM_PIP/config-status"
+   curl -sL "http://$VM_PIP/config-status"
    echo
    ```
 

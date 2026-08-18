@@ -130,8 +130,7 @@ In this task, you will create the WAF policy in Prevention mode and configure th
      --resource-group "$RG" \
      --policy-name wafpol-zava \
      --name Block-ZavaAttack-Header \
-     --match-variables RequestHeaders \
-     --selector X-Zava-Attack \
+     --match-variables RequestHeaders.X-Zava-Attack \
      --operator Equal \
      --values true
    ```
@@ -258,14 +257,14 @@ In this task, you will prove that ordinary HTTP traffic reaches the storefront t
 2. Confirm the health endpoint through the gateway.
 
    ```bash
-   curl -i "http://$AGW_PUBLIC_IP/health"
+   curl -i -L "http://$AGW_PUBLIC_IP/health"
    ```
 
 3. Confirm the storefront root page or status page through the gateway.
 
    ```bash
    curl -i "http://$AGW_PUBLIC_IP/"
-   curl -i "http://$AGW_PUBLIC_IP/config-status"
+   curl -i -L "http://$AGW_PUBLIC_IP/config-status"
    ```
 
 4. Run the validation for the healthy gateway before continuing.
@@ -324,13 +323,13 @@ In this task, you will send the first malicious-header test after diagnostics ar
 1. Send a normal request again to keep an access-log comparison point.
 
    ```bash
-   curl -i "http://$AGW_PUBLIC_IP/health"
+   curl -i -L "http://$AGW_PUBLIC_IP/health"
    ```
 
 2. Send the WAF test request with the custom header `X-Zava-Attack: true`.
 
    ```bash
-   curl -i -H "X-Zava-Attack: true" "http://$AGW_PUBLIC_IP/health"
+   curl -i -L -H "X-Zava-Attack: true" "http://$AGW_PUBLIC_IP/health"
    ```
 
    The expected result is an HTTP 403-style response from the WAF because the policy is in Prevention mode and the custom rule action is Block.
@@ -486,13 +485,13 @@ In this task, you will stop internet users from bypassing the gateway and reachi
 5. Test that direct VM public HTTP no longer works.
 
    ```bash
-   curl -i --max-time 15 "http://$VM_PUBLIC_IP/health" || echo "Direct VM HTTP is blocked or unreachable, as expected."
+   curl -i -L --max-time 15 "http://$VM_PUBLIC_IP/health" || echo "Direct VM HTTP is blocked or unreachable, as expected."
    ```
 
 6. Confirm the gateway path still works.
 
    ```bash
-   curl -i "http://$AGW_PUBLIC_IP/health"
+   curl -i -L "http://$AGW_PUBLIC_IP/health"
    ```
 
    > [!Success]

@@ -194,10 +194,3 @@ This lab is successful only when your evidence shows the full chain of controls 
 | Exercise 3: Least privilege and secret rotation | 45 minutes |
 | Exercise 4: Final validation and hardening report | 25 minutes |
 | **Total** | **240 minutes** |
-
-## After publishing
-
-> [!Note] These steps run **after** you push the template to CloudLabs — they verify CloudLabs can actually serve this lab guide to candidates.
-
-- **Verify docs-proxy access:** open Templates → your template → **Lab Guide Settings** in <https://admin.cloudlabs.ai> and confirm CloudLabs can reach this repo via the docs proxy. If the repo is private, configure GitHub access at the template level.
-- **Verify inline questions and inline validations:** sign in to <https://admin.cloudlabs.ai>, open your template, and walk through one full lab run to confirm every `<question>` and `<validation step="..."/>` renders correctly. Fix any that don't resolve.

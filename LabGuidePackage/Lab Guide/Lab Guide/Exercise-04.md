@@ -123,8 +123,8 @@ In this task, you will prove that the application resolves `ZavaAppConnectionStr
    APPGW_PUBLIC_IP_ID="$(az network application-gateway show -g "$RG" -n "$APPGW_NAME" --query "frontendIPConfigurations[0].publicIPAddress.id" -o tsv)"
    APPGW_IP="$(az network public-ip show --ids "$APPGW_PUBLIC_IP_ID" --query ipAddress -o tsv)"
 
-   curl -i "http://$APPGW_IP/health"
-   curl -s "http://$APPGW_IP/config-status"
+   curl -i -L "http://$APPGW_IP/health"
+   curl -s -L "http://$APPGW_IP/config-status"
    ```
 
 6. Confirm your `/config-status` response shows `KeyVault` and does not reveal the connection string value.
@@ -159,7 +159,7 @@ In this task, you will prove that normal public traffic works through Applicatio
 
    ```bash
    curl -i "http://$APPGW_IP/"
-   curl -i "http://$APPGW_IP/health"
+   curl -i -L "http://$APPGW_IP/health"
    ```
 
 4. Send the deterministic WAF test request through Application Gateway. The expected result is an HTTP 403 response because the request includes `X-Zava-Attack: true` and the WAF policy is in Prevention mode.

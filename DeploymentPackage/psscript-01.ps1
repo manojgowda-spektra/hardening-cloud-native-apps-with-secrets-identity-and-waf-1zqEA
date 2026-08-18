@@ -51,12 +51,18 @@ try {
                 "{$key}",
                 "__${key}__",
                 "#${key}#",
-                "`${$key}",
-                $key
+                "`${$key}"
             )
             foreach ($pattern in $patterns) {
                 $content = $content.Replace($pattern, $value)
             }
+            # The undelimited token name is replaced only where it stands on its own and is not
+            # part of a variable name. A plain substring replace collides twice: TenantID matches
+            # inside AzureTenantID, so the tenant ID comes out prefixed with the text Azure, and
+            # the variable name in $AzureTenantID = 'AzureTenantID' is overwritten along with the
+            # value, which leaves AzureCreds.ps1 invalid PowerShell.
+            $bareToken = '(?<![\w$])' + [regex]::Escape($key) + '(?!\w)'
+            $content = [regex]::Replace($content, $bareToken, $value.Replace('$', '$$'))
         }
         Set-Content -Path $Path -Value $content -Encoding UTF8 -Force
     }
@@ -154,7 +160,7 @@ ODL ID: ODLID
             }
             catch {
                 if ($_.Exception.Message -notmatch 'already.*member') {
-                    Write-Log "Unable to add $trainerUserName to $group: $($_.Exception.Message)"
+                    Write-Log "Unable to add $trainerUserName to ${group}: $($_.Exception.Message)"
                 }
             }
         }
@@ -568,9 +574,19 @@ ZAVA_HELPER_PATH=C:\ZavaRetail\Tools\Set-ZavaSecretSource.ps1
         Restart-Service W3SVC -Force
 
         # Warm up endpoints. The health path may redirect to the directory default document; Invoke-WebRequest follows redirects by default.
+        # The first request to each page triggers ASP.NET compilation and is the slowest request this
+        # VM ever serves, so the warm-up is given a long timeout and is never allowed to fail the
+        # deployment. The site is already installed; the pages compile on the first real request.
         Start-Sleep -Seconds 5
-        Invoke-WebRequest -Uri 'http://localhost/health' -UseBasicParsing -TimeoutSec 30 | Out-Null
-        Invoke-WebRequest -Uri 'http://localhost/config-status' -UseBasicParsing -TimeoutSec 30 | Out-Null
+        foreach ($warmUpUri in @('http://localhost/health', 'http://localhost/config-status')) {
+            try {
+                Invoke-WebRequest -Uri $warmUpUri -UseBasicParsing -TimeoutSec 120 | Out-Null
+                Write-Log "Warm-up request to $warmUpUri completed."
+            }
+            catch {
+                Write-Log "Warm-up request to $warmUpUri did not succeed and was ignored: $($_.Exception.Message)"
+            }
+        }
     }
 
     CreateCredFile

@@ -2,6 +2,14 @@ using namespace System.Net
 
 # Note: $sub (subscription id) and $DID (deployment id) are injected by the platform.
 $rg = "rg-zava-$DID"
+# Fallback: CloudLabs names the resource group from the template Code (e.g. ODL-CNA-<DID>),
+# not "rg-zava-<DID>". If the assumed name is absent, find the group whose name carries the
+# deployment id. Without this every check below fails before it reads anything.
+if (-not (Get-AzResourceGroup -Name $rg -ErrorAction SilentlyContinue)) {
+    $__match = @(Get-AzResourceGroup -ErrorAction SilentlyContinue |
+                 Where-Object { $_.ResourceGroupName -like "*$DID*" })
+    if ($__match.Count -ge 1) { $rg = $__match[0].ResourceGroupName }
+}
 $count = 0
 $found = $false
 

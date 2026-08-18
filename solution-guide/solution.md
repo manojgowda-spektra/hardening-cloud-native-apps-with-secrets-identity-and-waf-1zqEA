@@ -172,7 +172,7 @@ az monitor diagnostic-settings list --resource "$AGW_ID" \
 ```bash
 AGW_PIP_ID=$(az network application-gateway show -g "$RG" -n "$AGW" --query 'frontendIPConfigurations[0].publicIPAddress.id' -o tsv)
 AGW_PIP=$(az network public-ip show --ids "$AGW_PIP_ID" --query ipAddress -o tsv)
-curl -i "http://$AGW_PIP/health"
+curl -iL "http://$AGW_PIP/health"
 curl -i -H 'X-Zava-Attack: true' "http://$AGW_PIP/"
 WORKSPACE_ID=$(az monitor log-analytics workspace show -g "$RG" -n "$LAW" --query customerId -o tsv)
 az monitor log-analytics query -w "$WORKSPACE_ID" --analytics-query "

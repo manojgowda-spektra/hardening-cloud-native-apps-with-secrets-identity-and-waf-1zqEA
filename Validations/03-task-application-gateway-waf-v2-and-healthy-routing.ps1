@@ -237,10 +237,10 @@ do {
 
                 $scheme = if ($selectedListener -and $selectedListener.Protocol -eq 'Https') { 'https' } else { 'http' }
                 $uri = if (($scheme -eq 'http' -and $frontendPort -eq 80) -or ($scheme -eq 'https' -and $frontendPort -eq 443)) {
-                    "$scheme://$gatewayHost/"
+                    "${scheme}://$gatewayHost/"
                 }
                 else {
-                    "$scheme://$gatewayHost`:$frontendPort/"
+                    "${scheme}://$gatewayHost`:$frontendPort/"
                 }
 
                 try {

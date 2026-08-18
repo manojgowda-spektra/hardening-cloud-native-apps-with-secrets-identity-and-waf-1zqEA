@@ -44,7 +44,7 @@
     "vnetAddressPrefix": "10.40.0.0/16",
     "appSubnetPrefix": "10.40.1.0/24",
     "appgwSubnetPrefix": "10.40.2.0/24",
-    "sampleConnectionString": "Server=tcp:zava-sample.database.windows.net,1433;Initial Catalog=ZavaRetail;Persist Security Info=False;User ID=zava_app;Password=SampleOnly-DoNotUse;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    "sampleConnectionString": "Server=tcp:zava-sample.database.windows.net,1433;Initial Catalog=ZavaRetailSample;User ID=zava_app;Password=PlaintextSampleOnly!2026;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   },
   "resources": [
     {
@@ -141,7 +141,10 @@
       "properties": {
         "publicIPAllocationMethod": "Static",
         "publicIPAddressVersion": "IPv4",
-        "idleTimeoutInMinutes": 4
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[toLower(concat('zava-', parameters('DeploymentID')))]"
+        }
       }
     },
     {
@@ -257,7 +260,7 @@
         "[resourceId('Microsoft.Compute/virtualMachines', variables('LabVMName'))]"
       ],
       "properties": {
-        "status": "Enabled",
+        "status": "Disabled",
         "taskType": "ComputeVmShutdownTask",
         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('LabVMName'))]",
         "timeZoneId": "UTC",
@@ -337,7 +340,7 @@
   "outputs": {
     "vmServerDnsName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName')), '2024-05-01').ipAddress]"
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName')), '2024-05-01').dnsSettings.fqdn]"
     },
     "vmServerUsername": {
       "type": "string",
