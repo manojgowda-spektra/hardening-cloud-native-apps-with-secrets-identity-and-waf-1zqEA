@@ -1,0 +1,228 @@
+{
+  "packageId": "f4521ff9-bd11-4fc8-a3ae-290cbc31ff30",
+  "slug": "hardening-cloud-native-apps-with-secrets-identity-and-waf-1zqEA",
+  "title": "Hardening Cloud-Native Apps with Secrets, Identity, and WAF",
+  "version": 1,
+  "exportedAt": "2026-08-17T17:32:12.347Z",
+  "exportTarget": "github_new_repo",
+  "force": false,
+  "deliverableConfig": {
+    "arm": {
+      "stages": 1,
+      "enabled": true
+    },
+    "cse": {
+      "enabled": true
+    },
+    "rbac": {
+      "enabled": false
+    },
+    "policy": {
+      "enabled": true
+    },
+    "readme": {
+      "enabled": true
+    },
+    "labGuide": {
+      "enabled": true,
+      "exercises": 4
+    },
+    "solution": {
+      "enabled": true
+    },
+    "questions": {
+      "count": 4,
+      "enabled": true
+    },
+    "specSheet": {
+      "enabled": true
+    },
+    "validations": {
+      "count": 6,
+      "enabled": true
+    }
+  },
+  "artifacts": [
+    {
+      "path": "DeploymentPackage/deploy-01.json",
+      "kind": "arm",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "DeploymentPackage/deploy-01.parameters.json",
+      "kind": "arm_params",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "DeploymentPackage/psscript-01.ps1",
+      "kind": "psscript",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Inline-Questions/question-01.md",
+      "kind": "question_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Inline-Questions/question-02.md",
+      "kind": "question_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Inline-Questions/question-03.md",
+      "kind": "question_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Inline-Questions/question-04.md",
+      "kind": "question_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/Lab Guide/Exercise-01.md",
+      "kind": "exercise_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/Lab Guide/Exercise-02.md",
+      "kind": "exercise_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/Lab Guide/Exercise-03.md",
+      "kind": "exercise_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/Lab Guide/Exercise-04.md",
+      "kind": "exercise_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/Lab Guide/GettingStarted-V2.md",
+      "kind": "getting_started",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "permissions/CustomARMPolicy/azure-policy.json",
+      "kind": "policy_json",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "README.md",
+      "kind": "readme_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "solution-guide/solution.md",
+      "kind": "solution_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Spec.md",
+      "kind": "spec_md",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/01-task-learner-created-vault-secret-and-vm-identity.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/02-task-runtime-identity-and-governed-source.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/03-task-application-gateway-waf-v2-and-healthy-routing.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/04-task-waf-policy-diagnostics.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/05-task-direct-vm-exposure-removed.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/06-task-legacy-metadata-access.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/06-task-legacy-metadata-only-access-and-rotation.ps1",
+      "kind": "validation_ps1",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/Application Gateway WAF v2 and Healthy Routing.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/Direct VM Exposure Removed.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/Learner-created Vault Secret and VM Identity.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/Legacy Metadata Access.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/Runtime Identity and Governed Source.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "Validations/WAF Policy Diagnostics.ps1",
+      "kind": "source_file",
+      "lintStatus": "passed"
+    },
+    {
+      "path": "LabGuidePackage/Lab Guide/masterdoc.json",
+      "kind": "masterdoc",
+      "lintStatus": null
+    },
+    {
+      "path": "template-config.json",
+      "kind": "template_config",
+      "lintStatus": null
+    }
+  ],
+  "errors": [],
+  "coherence": [
+    {
+      "severity": "error",
+      "rule": "coherence-validator-requires-unprovisioned",
+      "message": "\"Validations/01-task-learner-created-vault-secret-and-vm-identity.ps1\" requires resource type the deployment templates never create: Microsoft.KeyVault/vaults. A correctly-deployed lab can never pass this validator — either deploy the resource or rewrite the check against what the template actually provisions.",
+      "artifactPath": "Validations/01-task-learner-created-vault-secret-and-vm-identity.ps1"
+    },
+    {
+      "severity": "error",
+      "rule": "coherence-validator-requires-unprovisioned",
+      "message": "\"Validations/06-task-legacy-metadata-only-access-and-rotation.ps1\" requires resource types the deployment templates never create: Microsoft.KeyVault/vaults/secrets, Microsoft.KeyVault/vaults. A correctly-deployed lab can never pass this validator — either deploy the resource or rewrite the check against what the template actually provisions.",
+      "artifactPath": "Validations/06-task-legacy-metadata-only-access-and-rotation.ps1"
+    }
+  ],
+  "runnability": {
+    "issues": [],
+    "blocking": 0,
+    "warning": 0,
+    "info": 0
+  }
+}

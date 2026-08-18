@@ -1,0 +1,29 @@
+[
+  {
+    "Name": "Hardening Cloud-Native Apps with Secrets, Identity, and WAF",
+    "Language": "English",
+    "BaseURL": "https://raw.githubusercontent.com/manojgowda-spektra/hardening-cloud-native-apps-with-secrets-identity-and-waf-1zqEA/main/LabGuidePackage/Lab%20Guide/Lab%20Guide/",
+    "Files": [
+      {
+        "RawFilePath": "GettingStarted-V2.md",
+        "Order": 1
+      },
+      {
+        "RawFilePath": "Exercise-01.md",
+        "Order": 2
+      },
+      {
+        "RawFilePath": "Exercise-02.md",
+        "Order": 3
+      },
+      {
+        "RawFilePath": "Exercise-03.md",
+        "Order": 4
+      },
+      {
+        "RawFilePath": "Exercise-04.md",
+        "Order": 5
+      }
+    ]
+  }
+]

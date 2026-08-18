@@ -1,0 +1,41 @@
+{
+  "if": {
+    "anyOf": [
+      {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/applicationGateways"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "Microsoft.Network/applicationGateways/sku.tier",
+                "notEquals": "WAF_v2"
+              },
+              {
+                "field": "Microsoft.Network/applicationGateways/firewallPolicy.id",
+                "exists": "false"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+          },
+          {
+            "field": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/policySettings.mode",
+            "notEquals": "Prevention"
+          }
+        ]
+      }
+    ]
+  },
+  "then": {
+    "effect": "audit"
+  }
+}
