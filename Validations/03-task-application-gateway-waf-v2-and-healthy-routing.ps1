@@ -42,8 +42,8 @@ do {
 
         $resourceGroup = Get-AzResourceGroup -Name $rg -ErrorAction SilentlyContinue
         if (-not $resourceGroup) {
-            $candidateResourceGroups = @(Get-AzResourceGroup -ErrorAction Stop | Where-Object { $_.ResourceGroupName -like "*$DID*" -and $_.ResourceGroupName -match 'zava|retail|rg' })
-            if ($candidateResourceGroups.Count -eq 1) {
+            $candidateResourceGroups = @(Get-AzResourceGroup -ErrorAction Stop | Where-Object { $_.ResourceGroupName -like "*$DID*" })
+            if ($candidateResourceGroups.Count -ge 1) {
                 $rg = $candidateResourceGroups[0].ResourceGroupName
                 $resourceGroup = $candidateResourceGroups[0]
             }

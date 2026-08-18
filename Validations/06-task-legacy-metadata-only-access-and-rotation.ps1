@@ -218,7 +218,7 @@ do {
         if (-not $resourceGroup) {
             $candidateGroups = @(Get-AzResourceGroup -ErrorAction Stop | Where-Object { $_.ResourceGroupName -like "*$DID*" })
             foreach ($candidate in $candidateGroups) {
-                $candidateIdentity = Get-AzResource -ResourceGroupName $candidate.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -Name $legacyIdentityName -ErrorAction SilentlyContinue
+                $candidateIdentity = Get-AzResource -ResourceGroupName $candidate.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $legacyIdentityName } | Select-Object -First 1
                 if ($candidateIdentity) {
                     $resourceGroup = $candidate
                     $rg = $candidate.ResourceGroupName
@@ -233,11 +233,13 @@ do {
         else {
             $rgScope = "/subscriptions/$sub/resourceGroups/$($resourceGroup.ResourceGroupName)"
 
-            $legacyIdentity = Get-AzResource -ResourceGroupName $resourceGroup.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -Name $legacyIdentityName -ErrorAction SilentlyContinue
+            $legacyIdentity = Get-AzResource -ResourceGroupName $resourceGroup.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $legacyIdentityName } | Select-Object -First 1
             if (-not $legacyIdentity) {
                 $lastFailure = "User-assigned managed identity '$legacyIdentityName' was not found in RG '$($resourceGroup.ResourceGroupName)'."
             }
             else {
+                $legacyIdentityDetail = Get-AzResource -ResourceId $legacyIdentity.ResourceId -ExpandProperties -ErrorAction SilentlyContinue
+                if ($legacyIdentityDetail) { $legacyIdentity = $legacyIdentityDetail }
                 $legacyPrincipalId = [string]$legacyIdentity.Properties.principalId
                 if ([string]::IsNullOrWhiteSpace($legacyPrincipalId)) {
                     $lastFailure = "User-assigned managed identity '$legacyIdentityName' was found, but its principalId was not available."

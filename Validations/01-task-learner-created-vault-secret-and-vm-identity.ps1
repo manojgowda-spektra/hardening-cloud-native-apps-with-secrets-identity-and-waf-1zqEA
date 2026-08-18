@@ -35,7 +35,7 @@ function Resolve-ZavaResourceGroup {
         $candidateVm = Get-AzVM -ResourceGroupName $candidate.ResourceGroupName -Name $VmName -ErrorAction SilentlyContinue
         if ($candidateVm) { return $candidate.ResourceGroupName }
 
-        $candidateIdentity = Get-AzResource -ResourceGroupName $candidate.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -Name $IdentityName -ErrorAction SilentlyContinue
+        $candidateIdentity = Get-AzResource -ResourceGroupName $candidate.ResourceGroupName -ResourceType "Microsoft.ManagedIdentity/userAssignedIdentities" -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $IdentityName } | Select-Object -First 1
         if ($candidateIdentity) { return $candidate.ResourceGroupName }
     }
 
