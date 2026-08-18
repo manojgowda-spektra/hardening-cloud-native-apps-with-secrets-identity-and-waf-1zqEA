@@ -56,13 +56,22 @@ try {
             foreach ($pattern in $patterns) {
                 $content = $content.Replace($pattern, $value)
             }
-            # The undelimited token name is replaced only where it stands on its own and is not
-            # part of a variable name. A plain substring replace collides twice: TenantID matches
-            # inside AzureTenantID, so the tenant ID comes out prefixed with the text Azure, and
-            # the variable name in $AzureTenantID = 'AzureTenantID' is overwritten along with the
-            # value, which leaves AzureCreds.ps1 invalid PowerShell.
-            $bareToken = '(?<![\w$])' + [regex]::Escape($key) + '(?!\w)'
-            $content = [regex]::Replace($content, $bareToken, $value.Replace('$', '$$'))
+            # The CloudLabs canonical templates carry tokens with a Value suffix
+            # ($AzureUserName="AzureUserNameValue"); the local fallback templates carry the
+            # bare token. Try the canonical form first, and fall back to the bare form only
+            # when the canonical one is absent, so labels like "AzureUserName=" survive.
+            # Word boundaries stop TenantID matching inside AzureTenantIDValue, and the
+            # dollar guard keeps variable names such as $AzureTenantID intact - the plain
+            # substring replace this replaces corrupted both.
+            $escaped = [regex]::Escape($key)
+            $canonicalToken = '(?<![\w$])' + $escaped + 'Value(?!\w)'
+            $bareToken = '(?<![\w$])' + $escaped + '(?!\w)'
+            if ([regex]::IsMatch($content, $canonicalToken)) {
+                $content = [regex]::Replace($content, $canonicalToken, $value.Replace('$', '$$'))
+            }
+            else {
+                $content = [regex]::Replace($content, $bareToken, $value.Replace('$', '$$'))
+            }
         }
         Set-Content -Path $Path -Value $content -Encoding UTF8 -Force
     }
