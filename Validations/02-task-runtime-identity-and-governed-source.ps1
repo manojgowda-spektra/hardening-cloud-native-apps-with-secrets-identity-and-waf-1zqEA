@@ -196,7 +196,11 @@ do {
             continue
         }
 
-        $vaults = @(Get-AzKeyVault -ResourceGroupName $rg -ErrorAction SilentlyContinue | Where-Object { $_.EnableRbacAuthorization -eq $true })
+        # Get-AzKeyVault in list form returns items without EnableRbacAuthorization;
+        # only the per-vault detail form carries it, so re-fetch each before filtering.
+        $vaults = @(Get-AzKeyVault -ResourceGroupName $rg -ErrorAction SilentlyContinue | ForEach-Object {
+            Get-AzKeyVault -VaultName $_.VaultName -ErrorAction SilentlyContinue
+        } | Where-Object { $_.EnableRbacAuthorization -eq $true })
         if ($vaults.Count -eq 0) {
             $finalFailure = "No Azure RBAC-mode Key Vault was found in RG '$rg'."
             $message = @{ Status = "Failed"; Message = $finalFailure } | ConvertTo-Json

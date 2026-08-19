@@ -70,7 +70,13 @@ do {
 
         $vaultResources = @()
         if ($resourceGroup) {
-            $vaultResources = @(Get-AzResource -ResourceGroupName $rg -ResourceType "Microsoft.KeyVault/vaults" -ExpandProperties -ErrorAction SilentlyContinue)
+            # -ExpandProperties on the list form throws inside Az.Resources and
+            # SilentlyContinue turns that into an empty result, so list first and
+            # expand each vault individually by resource id.
+            $vaultResources = @(Get-AzResource -ResourceGroupName $rg -ResourceType "Microsoft.KeyVault/vaults" -ErrorAction SilentlyContinue | ForEach-Object {
+                $expanded = Get-AzResource -ResourceId $_.ResourceId -ExpandProperties -ErrorAction SilentlyContinue
+                if ($expanded) { $expanded } else { $_ }
+            })
         }
 
         $rbacVaults = @($vaultResources | Where-Object {
