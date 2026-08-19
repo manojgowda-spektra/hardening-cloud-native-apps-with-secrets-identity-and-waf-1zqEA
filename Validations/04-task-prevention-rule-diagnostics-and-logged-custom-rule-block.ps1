@@ -418,7 +418,7 @@ do {
                             }
                             else {
                                 $workspaceResourceId = [string]$workspace.ResourceId
-                                $diagnosticSettings = @(Get-AzDiagnosticSetting -ResourceId $appGw.Id -ErrorAction SilentlyContinue)
+                                $diagnosticSettings = @(Get-AzDiagnosticSetting -ResourceId $appGw.Id -ErrorAction SilentlyContinue -WarningAction SilentlyContinue)
                                 $matchingDiagnostic = $null
 
                                 foreach ($setting in $diagnosticSettings) {

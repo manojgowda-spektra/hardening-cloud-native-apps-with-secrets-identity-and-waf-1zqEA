@@ -373,15 +373,38 @@ do {
                                     }
 
                                     if ($roleDefinition) {
-                                        $dataActions = @($roleDefinition.DataActions)
-                                        $notDataActions = @($roleDefinition.NotDataActions)
-                                        $actions = @($roleDefinition.Actions)
-                                        $notActions = @($roleDefinition.NotActions)
+                                        # Az.Resources 10.x moved Actions/DataActions/NotActions/
+                                        # NotDataActions from the top level into Permissions[n].
+                                        # Reading the old flattened properties returns null, which
+                                        # left both guards with empty allow-lists so neither could
+                                        # ever match. Evaluate each permission entry on its own so a
+                                        # NotDataActions in one entry is not applied to another's
+                                        # DataActions. Falls back to the flattened form for older Az.
+                                        $permissionSets = @($roleDefinition.Permissions | Where-Object { $_ })
+                                        if (-not $permissionSets) {
+                                            $permissionSets = @([pscustomobject]@{
+                                                DataActions    = @($roleDefinition.DataActions)
+                                                NotDataActions = @($roleDefinition.NotDataActions)
+                                                Actions        = @($roleDefinition.Actions)
+                                                NotActions     = @($roleDefinition.NotActions)
+                                            })
+                                        }
 
-                                        if (Test-RoleGrantsAction -AllowedPatterns $dataActions -DeniedPatterns $notDataActions -Targets $sensitiveSecretDataOps) {
+                                        $grantsSecretData = $false
+                                        $grantsPrivilegeOrVaultWrite = $false
+                                        foreach ($perm in $permissionSets) {
+                                            if (Test-RoleGrantsAction -AllowedPatterns @($perm.DataActions) -DeniedPatterns @($perm.NotDataActions) -Targets $sensitiveSecretDataOps) {
+                                                $grantsSecretData = $true
+                                            }
+                                            if (Test-RoleGrantsAction -AllowedPatterns @($perm.Actions) -DeniedPatterns @($perm.NotActions) -Targets $privilegeOrVaultWriteOps) {
+                                                $grantsPrivilegeOrVaultWrite = $true
+                                            }
+                                        }
+
+                                        if ($grantsSecretData) {
                                             $dangerousAssignments.Add("$roleName at $($assignment.Scope) grants getSecret or setSecret data permissions")
                                         }
-                                        elseif (Test-RoleGrantsAction -AllowedPatterns $actions -DeniedPatterns $notActions -Targets $privilegeOrVaultWriteOps) {
+                                        elseif ($grantsPrivilegeOrVaultWrite) {
                                             $customLabel = if ($roleDefinition.IsCustom -eq $true) { "custom role " } else { "" }
                                             $dangerousAssignments.Add("${customLabel}$roleName at $($assignment.Scope) grants privilege-management or vault-write permissions that can create a route to secret values")
                                         }

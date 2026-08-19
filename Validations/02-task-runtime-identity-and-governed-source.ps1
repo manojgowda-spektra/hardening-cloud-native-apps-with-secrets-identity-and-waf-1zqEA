@@ -112,7 +112,15 @@ function Test-RoleDefinitionHasSecretWrite {
     $roleDefinition = Get-AzRoleDefinition -Id $roleDefId -ErrorAction SilentlyContinue
     if ($null -eq $roleDefinition) { return $false }
 
-    foreach ($dataAction in @($roleDefinition.DataActions)) {
+    # Az.Resources 10.x removed the flattened Actions/DataActions/NotActions/
+    # NotDataActions properties from PSRoleDefinition; they now live per entry under
+    # Permissions[n]. Reading the old properties returns null, which made this check
+    # silently pass every role - it failed open. Read Permissions first, and fall back
+    # to the flattened form for older Az on other runners.
+    $roleDataActions = @($roleDefinition.Permissions | ForEach-Object { $_.DataActions })
+    if (-not ($roleDataActions | Where-Object { $_ })) { $roleDataActions = @($roleDefinition.DataActions) }
+
+    foreach ($dataAction in $roleDataActions) {
         if ([string]::IsNullOrWhiteSpace($dataAction)) { continue }
         $lowerAction = $dataAction.ToLowerInvariant()
         if ($lowerAction -eq '*' -or $lowerAction -like 'microsoft.keyvault/*' -or $lowerAction -like 'microsoft.keyvault/vaults/*') {
