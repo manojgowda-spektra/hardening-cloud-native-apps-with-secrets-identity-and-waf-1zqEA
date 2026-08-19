@@ -155,7 +155,7 @@ function Test-ZavaHttpEndpoint {
     param([Parameter(Mandatory = $true)][string]$Uri)
 
     try {
-        $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+        $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'; 'Accept' = '*/*' } -ErrorAction Stop
         return [pscustomobject]@{
             Succeeded  = ([int]$response.StatusCode -ge 200 -and [int]$response.StatusCode -lt 400)
             StatusCode = [int]$response.StatusCode

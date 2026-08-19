@@ -249,9 +249,15 @@ do {
                         UseBasicParsing = $true
                         TimeoutSec      = 30
                         ErrorAction     = 'Stop'
+                        # The managed OWASP rules block requests without Accept or
+                        # User-Agent headers, so the probe must look like a browser.
+                        Headers         = @{
+                            'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'
+                            'Accept'     = '*/*'
+                        }
                     }
                     if ($selectedListener -and -not [string]::IsNullOrWhiteSpace($selectedListener.HostName)) {
-                        $webRequestParams.Headers = @{ Host = $selectedListener.HostName }
+                        $webRequestParams.Headers['Host'] = $selectedListener.HostName
                     }
                     if ($scheme -eq 'https') {
                         $webRequestParams.SkipCertificateCheck = $true

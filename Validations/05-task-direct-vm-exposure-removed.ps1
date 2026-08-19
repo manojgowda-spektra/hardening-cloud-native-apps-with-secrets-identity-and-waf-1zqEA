@@ -112,7 +112,7 @@ function Test-HttpEndpoint {
     param([Parameter(Mandatory = $true)][string]$Uri)
 
     try {
-        $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
+        $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -TimeoutSec 10 -Headers @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'; 'Accept' = '*/*' } -ErrorAction Stop
         return [pscustomobject]@{
             Reachable  = $true
             StatusCode = [int]$response.StatusCode

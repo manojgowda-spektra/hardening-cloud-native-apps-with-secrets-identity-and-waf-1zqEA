@@ -89,7 +89,7 @@ function Get-StorefrontBaseUri {
     foreach ($ip in ($candidateIps | Select-Object -Unique)) {
         $baseUri = "http://$ip"
         try {
-            $health = Invoke-WebRequest -Uri "$baseUri/health" -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+            $health = Invoke-WebRequest -Uri "$baseUri/health" -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'; 'Accept' = '*/*' } -ErrorAction Stop
             if ($health.StatusCode -ge 200 -and $health.StatusCode -lt 400) {
                 return $baseUri
             }
@@ -281,7 +281,7 @@ do {
             continue
         }
 
-        $healthResponse = Invoke-WebRequest -Uri "$baseUri/health" -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+        $healthResponse = Invoke-WebRequest -Uri "$baseUri/health" -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'; 'Accept' = '*/*' } -ErrorAction Stop
         if ($healthResponse.StatusCode -lt 200 -or $healthResponse.StatusCode -ge 400) {
             $finalFailure = "Storefront /health at '$baseUri/health' returned HTTP $($healthResponse.StatusCode)."
             $message = @{ Status = "Failed"; Message = $finalFailure } | ConvertTo-Json
@@ -290,7 +290,7 @@ do {
             continue
         }
 
-        $configResponse = Invoke-WebRequest -Uri "$baseUri/config-status" -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+        $configResponse = Invoke-WebRequest -Uri "$baseUri/config-status" -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ZavaLabValidator/1.0'; 'Accept' = '*/*' } -ErrorAction Stop
         $configBody = [string]$configResponse.Content
         $reportsKeyVault = $configBody -match '(?i)\bKeyVault\b'
         $doesNotLeakSecret = Test-ConfigBodyDoesNotLeakSecret -Body $configBody
