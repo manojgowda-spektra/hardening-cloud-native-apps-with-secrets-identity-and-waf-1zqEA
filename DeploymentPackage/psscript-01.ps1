@@ -426,7 +426,10 @@ $commonCode
   <system.web>
     <compilation targetFramework="4.8" />
     <httpRuntime targetFramework="4.8" />
-    <customErrors mode="Off" />
+    <!-- On, not Off: with Off an unhandled exception or a malformed request path
+         renders a full ASP.NET stack trace with framework versions to the client.
+         This is a security-hardening lab; it should not ship that. -->
+    <customErrors mode="On" />
   </system.web>
   <system.webServer>
     <defaultDocument enabled="true">
