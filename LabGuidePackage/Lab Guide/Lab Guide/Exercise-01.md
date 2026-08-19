@@ -192,7 +192,7 @@ In this task, you will create the vault yourself and explicitly grant your own s
 > [!Important]
 > A `Forbidden` response immediately after creating the role assignment usually means the Key Vault data-plane role has not propagated yet. Wait and retry. Do not assign yourself Owner, Contributor, Key Vault Administrator, or broad subscription-level permissions to bypass propagation.
 
-<question>
+<question></question>
 
 ## Task 3: Store the exact secret `ZavaAppConnectionString`
 
