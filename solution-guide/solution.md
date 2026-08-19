@@ -234,8 +234,8 @@ az network application-gateway show-backend-health -g "$RG" -n "$AGW" -o json
 LEGACY_PID=$(az identity show -g "$RG" -n zava-app-legacy-id --query principalId -o tsv)
 az role assignment list --assignee-object-id "$LEGACY_PID" --all \
   --query '[].{role:roleDefinitionName,scope:scope}' -o table
-az role definition show --name 'Key Vault Reader' \
-  --query '{actions:permissions[0].actions,dataActions:permissions[0].dataActions}' -o json
+az role definition list --name 'Key Vault Reader' \
+  --query '[0].{actions:permissions[0].actions,dataActions:permissions[0].dataActions}' -o json
 ```
 
 **Rubric**
