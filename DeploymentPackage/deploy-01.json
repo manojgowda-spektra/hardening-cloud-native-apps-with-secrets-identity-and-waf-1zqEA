@@ -29,7 +29,7 @@
   },
   "variables": {
     "scripturl": "[uri(deployment().properties.templateLink.uri, 'psscript-01.ps1')]",
-    "LabVMName": "zava-web-vm",
+    "LabVMName": "[concat('labvm-', parameters('DeploymentID'))]",
     "vnetName": "zava-vnet",
     "appSubnetName": "app-subnet",
     "appgwSubnetName": "appgw-subnet",

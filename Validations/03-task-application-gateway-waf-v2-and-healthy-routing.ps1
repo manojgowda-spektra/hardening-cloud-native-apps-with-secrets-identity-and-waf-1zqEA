@@ -97,7 +97,7 @@ do {
                 $failureDetails.Add("Application Gateway '$($appGw.Name)' has no request routing rule that binds a listener to a backend target.")
             }
 
-            $vm = Get-AzVM -Name "zava-web-vm" -ResourceGroupName $rg -ErrorAction SilentlyContinue
+            $vm = Get-AzVM -Name "labvm-$DID" -ResourceGroupName $rg -ErrorAction SilentlyContinue
             $vmPrivateIps = New-Object System.Collections.Generic.List[string]
             $vmNicIds = New-Object System.Collections.Generic.List[string]
             if ($vm) {
@@ -118,7 +118,7 @@ do {
                 }
             }
             else {
-                $failureDetails.Add("Storefront VM 'zava-web-vm' was not found in resource group '$rg'.")
+                $failureDetails.Add("Storefront VM 'labvm-$DID' or another lab VM was not found. 'labvm-<DeploymentID>' was not found in resource group '$rg'.")
             }
 
             $backendTargets = New-Object System.Collections.Generic.List[string]
@@ -153,7 +153,7 @@ do {
             if (-not $targetsStorefront) {
                 $targetSummary = if ($backendTargets.Count -gt 0) { $backendTargets -join '; ' } else { 'no backend targets found' }
                 $expectedSummary = if ($vmPrivateIps.Count -gt 0) { $vmPrivateIps -join ', ' } else { 'no VM private IP discovered' }
-                $failureDetails.Add("Application Gateway '$($appGw.Name)' backend pool does not target storefront VM 'zava-web-vm'. Expected private IP(s): $expectedSummary. Backend target(s): $targetSummary.")
+                $failureDetails.Add("Application Gateway '$($appGw.Name)' backend pool does not target storefront VM 'labvm-<DeploymentID>'. Expected private IP(s): $expectedSummary. Backend target(s): $targetSummary.")
             }
 
             $backendHealth = $null
@@ -283,7 +283,7 @@ do {
             $healthySummary = @($healthyRecords | ForEach-Object { "$($_.Address)=$($_.Health)" }) -join '; '
             $message = @{
                 Status  = "Succeeded"
-                Message = "Application Gateway '$($appGw.Name)' in RG '$rg' is deployed in 'appgw-subnet' with WAF_v2 SKU, has listener/routing rule configuration, targets storefront VM 'zava-web-vm', reports healthy backend(s) [$healthySummary], and normal gateway traffic returns Zava Retail storefront content."
+                Message = "Application Gateway '$($appGw.Name)' in RG '$rg' is deployed in 'appgw-subnet' with WAF_v2 SKU, has listener/routing rule configuration, targets storefront VM 'labvm-<DeploymentID>', reports healthy backend(s) [$healthySummary], and normal gateway traffic returns Zava Retail storefront content."
             } | ConvertTo-Json -Compress
         }
         else {

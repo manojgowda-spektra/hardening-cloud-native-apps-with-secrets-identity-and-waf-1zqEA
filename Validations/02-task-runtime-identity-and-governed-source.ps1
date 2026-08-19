@@ -182,12 +182,12 @@ do {
             continue
         }
 
-        $vm = Get-AzVM -ResourceGroupName $rg -Name "zava-web-vm" -ErrorAction SilentlyContinue
+        $vm = Get-AzVM -ResourceGroupName $rg -Name "labvm-$DID" -ErrorAction SilentlyContinue
         if ($null -eq $vm) {
-            $vm = @(Get-AzVM -ResourceGroupName $rg -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'zava*' -or $_.Name -like '*web*' }) | Select-Object -First 1
+            $vm = @(Get-AzVM -ResourceGroupName $rg -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'labvm-*' -or $_.Name -like 'zava*' -or $_.Name -like '*web*' }) | Select-Object -First 1
         }
         if ($null -eq $vm) {
-            $finalFailure = "Storefront VM 'zava-web-vm' was not found in RG '$rg'."
+            $finalFailure = "Storefront VM 'labvm-$DID' was not found in RG '$rg'."
             $message = @{ Status = "Failed"; Message = $finalFailure } | ConvertTo-Json
             Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{ StatusCode = [HttpStatusCode]::OK; Body = $message })
             if ($count -lt 3) { Start-Sleep -Seconds 10 }

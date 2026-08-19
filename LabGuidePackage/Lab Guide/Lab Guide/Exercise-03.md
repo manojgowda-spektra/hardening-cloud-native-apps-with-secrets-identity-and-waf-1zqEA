@@ -32,7 +32,7 @@ In this task, you will reconnect to Azure, identify the lab resource group, and 
 
 2. Open **Cloud Shell** from the Azure portal and choose **PowerShell**.
 
-3. Keep your deployment marker available. Your lab deployment is **zava-<inject key="DeploymentID" enableCopy="false"/>**. If your resource group name differs, use the resource group that contains `zava-web-vm` and `zava-app-legacy-id`.
+3. Keep your deployment marker available. Your lab deployment is **zava-<inject key="DeploymentID" enableCopy="false"/>**. If your resource group name differs, use the resource group that contains the storefront VM `labvm-<DeploymentID>` and `zava-app-legacy-id`.
 
 4. In Cloud Shell, run the following discovery script. When prompted, paste the subscription ID and deployment ID from the lab page.
 
@@ -42,12 +42,14 @@ In this task, you will reconnect to Azure, identify the lab resource group, and 
 
    az account set --subscription $subscriptionId
 
-   $vmId = az vm list --query "[?name=='zava-web-vm'].id | [0]" -o tsv
+   $vmId = az vm list --query "[?starts_with(name,'labvm-')].id | [0]" -o tsv
+   if (-not $vmId) { $vmId = az vm list --query "[0].id" -o tsv }
    if (-not $vmId) {
-       throw "Could not find zava-web-vm. Confirm you are in the correct subscription."
+       throw "Could not find the storefront VM. Confirm you are in the correct subscription."
    }
 
    $rg = ($vmId -split '/')[4]
+   $vmName = ($vmId -split '/')[-1]
    $rgScope = az group show --name $rg --query id -o tsv
 
    $vaultName = az keyvault list --resource-group $rg --query "[?properties.enableRbacAuthorization==``true``].name | [0]" -o tsv
@@ -286,7 +288,7 @@ In this task, you will refresh the storefront if needed and confirm it remains h
    ```powershell
    az vm run-command invoke `
      --resource-group $rg `
-     --name zava-web-vm `
+     --name $vmName `
      --command-id RunPowerShellScript `
      --scripts "iisreset /restart" `
      --query "value[].message" `

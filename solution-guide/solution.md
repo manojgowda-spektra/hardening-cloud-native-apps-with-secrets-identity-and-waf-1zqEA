@@ -2,14 +2,14 @@
 
 # Hardening Cloud-Native Apps with Secrets, Identity, and WAF
 
-Assess outcomes rather than command-line conformity. Resource names may vary except for `zava-web-vm`, `ZavaAppConnectionString`, `BlockZavaAttackHeader`, and `zava-app-legacy-id`. The connection string is a sample security artifact: **there is no database and no database test is valid**.
+Assess outcomes rather than command-line conformity. Resource names may vary except for the storefront VM `labvm-<DeploymentID>`, `ZavaAppConnectionString`, `BlockZavaAttackHeader`, and `zava-app-legacy-id`. The connection string is a sample security artifact: **there is no database and no database test is valid**.
 
 Set assessment variables to discovered resource names. Prefer locating the resource group from the known VM or legacy identity rather than by a broad name match:
 
 ```bash
-RG=$(az vm list --query "[?name=='zava-web-vm'].resourceGroup | [0]" -o tsv)
+RG=$(az vm list --query "[?starts_with(name,'labvm-')].resourceGroup | [0]" -o tsv)
 [ -z "$RG" ] && RG=$(az identity list --query "[?name=='zava-app-legacy-id'].resourceGroup | [0]" -o tsv)
-VM='zava-web-vm'
+VM=$(az vm list -g "$RG" --query "[?starts_with(name,'labvm-')].name | [0]" -o tsv)
 KV='set-learner-vault-name'
 AGW='set-learner-gateway-name'
 LAW='set-provided-workspace-name'
@@ -303,7 +303,7 @@ Award completion only if the vault and gateway were learner-created; diagnostics
 - VM system-assigned identity: **Key Vault Secrets User**.
 - `zava-app-legacy-id`: **Key Vault Reader**, with no secret-value route.
 
-The storefront on `zava-web-vm` must remain healthy using the latest `ZavaAppConnectionString` version, without a database.
+The storefront on `labvm-<DeploymentID>` must remain healthy using the latest `ZavaAppConnectionString` version, without a database.
 
 ## Microsoft Learn grounding
 

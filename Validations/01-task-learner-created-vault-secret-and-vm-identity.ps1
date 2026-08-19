@@ -9,7 +9,10 @@ using namespace System.Net
 $rg = "rg-zava-$DID"
 $secretName = "ZavaAppConnectionString"
 $secretApiVersion = "2023-07-01"
-$expectedVmName = "zava-web-vm"
+# The ARM template names the VM to the CloudLabs convention labvm-<DeploymentID>.
+# Older deployments of this lab used a fixed name, so every VM lookup falls back to
+# the single VM in the resource group rather than failing on the name.
+$expectedVmName = "labvm-$DID"
 $legacyIdentityName = "zava-app-legacy-id"
 $count = 0
 $found = $false
@@ -127,7 +130,7 @@ do {
         if ($resourceGroup) {
             $vm = Get-AzVM -ResourceGroupName $rg -Name $expectedVmName -ErrorAction SilentlyContinue
             if ($null -eq $vm) {
-                $vm = @(Get-AzVM -ResourceGroupName $rg -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "zava*" } | Select-Object -First 1)
+                $vm = @(Get-AzVM -ResourceGroupName $rg -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "labvm-*" -or $_.Name -like "zava*" } | Select-Object -First 1)
             }
         }
 

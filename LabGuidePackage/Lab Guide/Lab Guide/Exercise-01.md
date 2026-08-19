@@ -61,7 +61,10 @@ In this task, you will sign in to Azure, find the Zava Retail resource group for
 6. Locate the storefront VM and its direct public endpoint.
 
    ```bash
-   VM_NAME=$(az vm list -g "$RG" --query "[?name=='zava-web-vm'].name | [0]" -o tsv)
+   VM_NAME=$(az vm list -g "$RG" --query "[?starts_with(name,'labvm-')].name | [0]" -o tsv)
+   if [ -z "$VM_NAME" ]; then
+     VM_NAME=$(az vm list -g "$RG" --query "[0].name" -o tsv)
+   fi
 
    if [ -z "$VM_NAME" ]; then
      VM_NAME=$(az vm list -g "$RG" --query "[?contains(name, 'zava') && contains(name, 'vm')].name | [0]" -o tsv)

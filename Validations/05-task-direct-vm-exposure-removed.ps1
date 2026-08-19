@@ -227,13 +227,13 @@ do {
 
         $resourceGroup = Get-AzResourceGroup -Name $rg -ErrorAction Stop
 
-        $vm = Get-AzVM -ResourceGroupName $resourceGroup.ResourceGroupName -Name 'zava-web-vm' -ErrorAction SilentlyContinue
+        $vm = Get-AzVM -ResourceGroupName $resourceGroup.ResourceGroupName -Name "labvm-$DID" -ErrorAction SilentlyContinue
         if (-not $vm) {
             $vm = Get-AzVM -ResourceGroupName $resourceGroup.ResourceGroupName -ErrorAction Stop | Where-Object { $_.Name -match 'zava.*web|web.*zava' } | Select-Object -First 1
         }
 
         if (-not $vm) {
-            throw "Storefront VM 'zava-web-vm' was not found in resource group '$rg'."
+            throw "Storefront VM 'labvm-$DID' was not found in resource group '$rg'."
         }
 
         $nicId = $vm.NetworkProfile.NetworkInterfaces[0].Id

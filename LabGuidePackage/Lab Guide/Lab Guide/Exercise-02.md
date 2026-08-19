@@ -44,25 +44,25 @@ In this task, you will sign in and collect the resource names, IP addresses, and
    echo "Deployment ID: $DID"
    ```
 
-4. Discover the resource group that contains the existing storefront VM named **zava-web-vm**. The fallback query is included only in case the lab environment contains a variant name that starts with `zava-web-vm`.
+4. Discover the resource group that contains the storefront VM. The VM is named `labvm-<DeploymentID>`, so the query matches on that prefix; the fallback covers a lab environment that names it differently.
 
    ```bash
-   RG=$(az vm list --query "[?name=='zava-web-vm'].resourceGroup | [0]" -o tsv)
+   RG=$(az vm list --query "[?starts_with(name,'labvm-')].resourceGroup | [0]" -o tsv)
    if [ -z "$RG" ]; then
-     RG=$(az vm list --query "[?starts_with(name, 'zava-web-vm')].resourceGroup | [0]" -o tsv)
+     RG=$(az vm list --query "[0].resourceGroup" -o tsv)
    fi
    echo "Resource group: $RG"
    ```
 
    > [!Tip]
-   > If the variable is empty, run `az vm list -o table` and copy the resource group for the Zava storefront VM into `RG` manually.
+   > If the variable is empty, run `az vm list -o table` and copy the resource group for the storefront VM into `RG` manually.
 
-5. Discover the VM, virtual network, Application Gateway subnet, VM private IP, VM public IP, and Log Analytics workspace. The exact VM name is `zava-web-vm`; the fallback query is only for discovery resilience.
+5. Discover the VM, virtual network, Application Gateway subnet, VM private IP, VM public IP, and Log Analytics workspace. The VM is named `labvm-<DeploymentID>`; the fallback query is only for discovery resilience.
 
    ```bash
-   VM_NAME=$(az vm list -g "$RG" --query "[?name=='zava-web-vm'].name | [0]" -o tsv)
+   VM_NAME=$(az vm list -g "$RG" --query "[?starts_with(name,'labvm-')].name | [0]" -o tsv)
    if [ -z "$VM_NAME" ]; then
-     VM_NAME=$(az vm list -g "$RG" --query "[?starts_with(name, 'zava-web-vm')].name | [0]" -o tsv)
+     VM_NAME=$(az vm list -g "$RG" --query "[0].name" -o tsv)
    fi
    VNET_NAME=$(az network vnet list -g "$RG" --query "[0].name" -o tsv)
    APPGW_SUBNET_ID=$(az network vnet subnet show -g "$RG" --vnet-name "$VNET_NAME" -n appgw-subnet --query id -o tsv)

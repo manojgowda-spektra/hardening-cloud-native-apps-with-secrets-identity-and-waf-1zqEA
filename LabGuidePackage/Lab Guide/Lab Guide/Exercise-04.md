@@ -30,14 +30,15 @@ In this task, you will sign in, select the lab subscription, and discover the re
 
 2. Confirm that you are working in subscription <inject key="SubscriptionID"></inject> and tenant <inject key="TenantID"></inject>.
 
-3. Open the lab resource group for deployment **zava-<inject key="DeploymentID" enableCopy="false"/>**. If your lab environment adds a prefix or suffix to the resource group name, use the resource group that contains `zava-web-vm`, `zava-app-legacy-id`, and the Log Analytics workspace.
+3. Open the lab resource group for deployment **zava-<inject key="DeploymentID" enableCopy="false"/>**. If your lab environment adds a prefix or suffix to the resource group name, use the resource group that contains the storefront VM `labvm-<DeploymentID>`, `zava-app-legacy-id`, and the Log Analytics workspace.
 
-4. Open **Cloud Shell** from the Azure portal and run the following commands to discover the actual resource names. The discovery checks the VM `zava-web-vm` first, then the legacy identity `zava-app-legacy-id`. If both lookups fail, use deployment **zava-<inject key="DeploymentID" enableCopy="false"/>** in the portal to identify the lab resource group and paste the resource group name when prompted.
+4. Open **Cloud Shell** from the Azure portal and run the following commands to discover the actual resource names. The discovery checks for a VM named `labvm-<DeploymentID>` first, then the legacy identity `zava-app-legacy-id`. If both lookups fail, use deployment **zava-<inject key="DeploymentID" enableCopy="false"/>** in the portal to identify the lab resource group and paste the resource group name when prompted.
 
    ```bash
    az account set --subscription "$(az account show --query id -o tsv)"
 
-   VM_NAME="zava-web-vm"
+   VM_NAME=$(az vm list --query "[?starts_with(name,'labvm-')].name | [0]" -o tsv)
+   if [ -z "$VM_NAME" ]; then VM_NAME=$(az vm list --query "[0].name" -o tsv); fi
    APPGW_NAME="agw-zava-waf"
    WAF_POLICY_NAME="wafpol-zava"
    LEGACY_ID_NAME="zava-app-legacy-id"

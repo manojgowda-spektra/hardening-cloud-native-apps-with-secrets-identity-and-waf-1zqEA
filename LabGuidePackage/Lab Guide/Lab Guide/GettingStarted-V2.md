@@ -38,7 +38,7 @@ When you create learner-owned resources, use the naming conventions in this guid
 
 | Component | Expected name or pattern |
 | --- | --- |
-| Storefront VM | `zava-web-vm` |
+| Storefront VM | `labvm-<DeploymentID>` |
 | Application subnet | `app-subnet` |
 | Application Gateway subnet | `appgw-subnet` |
 | Legacy user-assigned identity | `zava-app-legacy-id` |
