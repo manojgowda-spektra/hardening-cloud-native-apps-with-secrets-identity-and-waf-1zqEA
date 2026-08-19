@@ -263,6 +263,10 @@ do {
                             $bestVaultFailure = "No candidate vault was evaluated."
 
                             foreach ($vault in $candidateVaults) {
+                                # The plain listing carries no Properties payload, so the
+                                # RBAC flag below would always read false. Expand first.
+                                $vaultDetail = Get-AzResource -ResourceId $vault.ResourceId -ExpandProperties -ErrorAction SilentlyContinue
+                                if ($vaultDetail) { $vault = $vaultDetail }
                                 $vaultScope = Normalize-Scope $vault.ResourceId
                                 $secretControlPlane = Get-ControlPlaneSecretResource -VaultResourceId $vaultScope -SecretName $secretName
 
