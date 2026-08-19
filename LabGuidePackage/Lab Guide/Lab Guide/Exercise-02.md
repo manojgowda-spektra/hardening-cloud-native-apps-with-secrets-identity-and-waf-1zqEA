@@ -345,12 +345,34 @@ In this task, you will send the first malicious-header test after diagnostics ar
 
    The expected result is an HTTP 403-style response from the WAF because the policy is in Prevention mode and the custom rule action is Block.
 
-3. Wait for Azure Monitor ingestion. Application Gateway logs are collected periodically and commonly require several minutes before they appear in Log Analytics.
+3. Wait for the firewall log to appear, resending the blocked request as you wait.
+
+   > [!Important]
+   > A newly created diagnostic setting does not start emitting Application Gateway logs immediately. In testing, the first firewall record appeared about **35 minutes** after diagnostics were enabled, and requests sent before that were never logged at all. Once records do start flowing, they reach Log Analytics in **one to three minutes**. So a single request plus a fixed wait is not enough: keep resending the blocked request until a record appears.
 
    ```bash
-   echo "Waiting 8 minutes for Application Gateway firewall and access logs to reach Log Analytics..."
-   sleep 480
+   WORKSPACE_CUSTOMER_ID=$(az monitor log-analytics workspace show -g "$RG" -n "$LAW_NAME" --query customerId -o tsv)
+
+   # az needs the log-analytics extension; install it without an interactive prompt
+   az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
+
+   for i in $(seq 1 20); do
+     curl -s -o /dev/null -H "X-Zava-Attack: true" "http://$AGW_PUBLIC_IP/health"
+     ROWS=$(az monitor log-analytics query \
+       --workspace "$WORKSPACE_CUSTOMER_ID" \
+       --analytics-query "AGWFirewallLogs | where TimeGenerated > ago(2h) | where tostring(column_ifexists('RuleId', '')) == 'BlockZavaAttackHeader' | count" \
+       --query "[0].Count" -o tsv 2>/dev/null)
+     if [ "${ROWS:-0}" -gt 0 ]; then
+       echo "Firewall record found after about $(( (i - 1) * 2 )) minutes."
+       break
+     fi
+     echo "No firewall record yet (check $i of 20). Waiting 2 minutes..."
+     sleep 120
+   done
    ```
+
+   > [!Note]
+   > Each blocked request still returns HTTP 403 immediately. Only the log record is delayed, so resending costs nothing and gives the diagnostic pipeline more chances to capture an event.
 
 4. Query the resource-specific firewall table for the custom rule. This is the preferred schema when the diagnostic setting uses resource-specific destination tables.
 

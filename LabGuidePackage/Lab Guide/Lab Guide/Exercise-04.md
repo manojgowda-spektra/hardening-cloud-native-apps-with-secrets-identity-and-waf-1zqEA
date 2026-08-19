@@ -200,7 +200,12 @@ In this task, you will prove that the block is visible in Application Gateway fi
      -o json
    ```
 
-2. Wait a few minutes if you generated the WAF request recently. Azure Monitor ingestion is not instantaneous, and firewall logs are collected after diagnostics are enabled.
+2. Confirm a firewall record exists before querying. Azure Monitor ingestion adds only one to three minutes, but a diagnostic setting enabled recently can take around 35 minutes to start emitting Application Gateway records at all, and requests sent before that are never logged. If Exercise 2 already produced a record you can continue; otherwise resend the blocked request every couple of minutes until one appears.
+
+   ```bash
+   # az needs the log-analytics extension; install it without an interactive prompt
+   az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
+   ```
 
 3. Query resource-specific Application Gateway firewall logs first. This table is used when diagnostics are configured for resource-specific destination tables.
 
