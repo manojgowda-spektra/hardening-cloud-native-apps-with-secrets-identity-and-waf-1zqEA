@@ -327,7 +327,7 @@ In this task, you will refresh the storefront if needed and confirm it remains h
 
 Run the canonical validation script `06-task-legacy-metadata-only-access-and-rotation.ps1` for legacy metadata-only access and rotation.
 
-<validation step="06-task-legacy-metadata-only-access-and-rotation.ps1"/>
+<validation step="6522e4ce-0f60-48ef-b501-afaf787488fd"/>
 
 ## Summary
 

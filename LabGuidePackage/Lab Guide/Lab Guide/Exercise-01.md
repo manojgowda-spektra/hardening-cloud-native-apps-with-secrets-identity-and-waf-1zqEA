@@ -291,7 +291,7 @@ In this task, you will enable the VM identity that the storefront will use at ru
 > [!Tip]
 > Key Vault Secrets User is the runtime read role. Your own account uses Key Vault Secrets Officer to administer and rotate the secret, but the VM identity should not be able to set, delete, or rotate secret values.
 
-<validation step="Learner-created vault, secret, and VM identity"/>
+<validation step="4777d3ad-40be-4ea4-9c8b-c62e707d27c2"/>
 
 ## Task 5: Switch the storefront to Key Vault and neutralize local plaintext authority
 
@@ -403,7 +403,7 @@ In this task, you will gather the evidence required for the Exercise 1 validatio
    - `/config-status` reports `KeyVault`.
    - The response does not expose the secret value.
 
-<validation step="Runtime identity and governed source"/>
+<validation step="8ab62012-4e9f-47c0-acc3-014854e69842"/>
 
 ## Summary
 

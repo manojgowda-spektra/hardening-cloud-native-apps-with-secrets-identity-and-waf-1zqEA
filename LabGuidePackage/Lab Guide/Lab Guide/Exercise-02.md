@@ -280,7 +280,7 @@ In this task, you will prove that ordinary HTTP traffic reaches the storefront t
 
 4. Run the validation for the healthy gateway before continuing.
 
-   <validation step="Application Gateway WAF_v2 and healthy routing"/>
+   <validation step="5d2b78fd-90a3-457b-a809-a0472e52dcc4"/>
 
    > [!Important]
    > The next task must be completed before the first malicious-header test. Diagnostic logs are not retrospective; a request sent before the diagnostic setting exists is not available later in Log Analytics.
@@ -439,7 +439,7 @@ In this task, you will send the first malicious-header test after diagnostics ar
 
 7. Run the canonical validation script `04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1` for the WAF policy, diagnostic setting, and logged custom-rule block.
 
-   <validation step="04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1"/>
+   <validation step="9e249b08-23bf-4c81-986d-28d560e6619d"/>
 
    > [!Important]
    > An HTTP 403 alone is not sufficient evidence for this lab. You must also have a firewall log record that identifies `BlockZavaAttackHeader` specifically.
@@ -532,7 +532,7 @@ In this task, you will stop internet users from bypassing the gateway and reachi
 
 7. Run the validation for direct exposure removal.
 
-   <validation step="Direct VM exposure removed"/>
+   <validation step="f97768af-c572-417e-9b94-4c32d30bc6b1"/>
 
 ## Summary
 

@@ -129,9 +129,9 @@ In this task, you will prove that the application resolves `ZavaAppConnectionStr
 
 6. Confirm your `/config-status` response shows `KeyVault` and does not reveal the connection string value.
 
-<validation step="Learner-created vault, secret, and VM identity"/>
+<validation step="4777d3ad-40be-4ea4-9c8b-c62e707d27c2"/>
 
-<validation step="Runtime identity and governed source"/>
+<validation step="8ab62012-4e9f-47c0-acc3-014854e69842"/>
 
 ## Task 3: Validate Application Gateway-only access and WAF blocking
 
@@ -181,9 +181,9 @@ In this task, you will prove that normal public traffic works through Applicatio
    fi
    ```
 
-<validation step="Application Gateway WAF_v2 and healthy routing"/>
+<validation step="5d2b78fd-90a3-457b-a809-a0472e52dcc4"/>
 
-<validation step="Direct VM exposure removed"/>
+<validation step="f97768af-c572-417e-9b94-4c32d30bc6b1"/>
 
 ## Task 4: Validate Application Gateway diagnostics and Log Analytics evidence
 
@@ -230,7 +230,7 @@ In this task, you will prove that the block is visible in Application Gateway fi
 
 Run the canonical validation script `04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1` for Prevention mode, the custom WAF rule, Application Gateway diagnostics, and the logged block.
 
-<validation step="04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1"/>
+<validation step="9e249b08-23bf-4c81-986d-28d560e6619d"/>
 
 ## Task 5: Validate legacy identity least privilege
 
@@ -278,7 +278,7 @@ In this task, you will prove that `zava-app-legacy-id` no longer has resource-gr
 
 Run the canonical validation script `06-task-legacy-metadata-only-access-and-rotation.ps1` for legacy metadata-only access and secret rotation.
 
-<validation step="06-task-legacy-metadata-only-access-and-rotation.ps1"/>
+<validation step="6522e4ce-0f60-48ef-b501-afaf787488fd"/>
 
 <question></question>
 
