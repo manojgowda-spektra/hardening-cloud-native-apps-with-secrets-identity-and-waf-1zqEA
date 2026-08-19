@@ -299,8 +299,32 @@ ODL ID: ODLID
 </script>
 '@
 
-        $rootPage = @'
-<%@ Page Language="C#" %>
+        # Double-quoted here-string so $commonCode splices in, matching the health page.
+        # The HTML below contains no dollar signs or backticks, so nothing else interpolates.
+        $rootPage = @"
+<%@ Page Language="C#" %>
+$commonCode
+<script runat="server">
+    // The badge used to be a fixed string claiming the initial, unhardened posture. It stayed
+    // there after the learner had moved the secret into Key Vault, so the front page
+    // contradicted /health and /config-status. Read the live config instead.
+    string postureText = "Initial posture: direct VM + local plaintext sample secret";
+    string postureClass = "badge";
+    void Page_Load(object sender, EventArgs e)
+    {
+        try
+        {
+            var config = ReadConfig();
+            var source = ConfigValue(config, "Source");
+            if (String.Equals(source, "KeyVault", StringComparison.OrdinalIgnoreCase))
+            {
+                postureText = "Current posture: secret governed in Key Vault, retrieved with the VM managed identity";
+                postureClass = "badge ok";
+            }
+        }
+        catch { }
+    }
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -313,13 +337,14 @@ ODL ID: ODLID
         .card { background: white; border-radius: 10px; padding: 24px; max-width: 900px; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
         code { background: #eef2ff; padding: 2px 6px; border-radius: 4px; }
         .badge { display: inline-block; background: #fee2e2; color: #991b1b; border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+        .badge.ok { background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
     <header><h1>Zava Retail Storefront</h1><p>Working storefront baseline for identity, secrets, and WAF hardening.</p></header>
     <main>
         <section class="card">
-            <span class="badge">Initial posture: direct VM + local plaintext sample secret</span>
+            <span class="<%= postureClass %>"><%= Server.HtmlEncode(postureText) %></span>
             <h2>Welcome to Zava Retail</h2>
             <p>This lightweight storefront is intentionally deployed on a single IIS VM so you can harden it without rebuilding it.</p>
             <ul>
@@ -333,7 +358,7 @@ ODL ID: ODLID
     </main>
 </body>
 </html>
-'@
+"@
         Set-Content -Path (Join-Path $siteRoot 'default.aspx') -Value $rootPage -Encoding UTF8 -Force
 
         $healthPage = @"
