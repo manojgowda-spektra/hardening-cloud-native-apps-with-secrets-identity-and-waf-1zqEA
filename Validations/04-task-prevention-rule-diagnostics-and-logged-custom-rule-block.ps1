@@ -233,7 +233,7 @@ function Test-ZavaCustomRule {
         BlockAction   = $false
         HeaderMatch   = $false
         Enabled       = $false
-        FailureDetail = "Custom rule 'Block-ZavaAttack-Header' was not found."
+        FailureDetail = "Custom rule 'BlockZavaAttackHeader' was not found."
     }
 
     $customRules = @()
@@ -241,7 +241,7 @@ function Test-ZavaCustomRule {
         $customRules = @($PolicyResource.Properties.customRules)
     }
 
-    $rule = $customRules | Where-Object { $_.name -eq "Block-ZavaAttack-Header" } | Select-Object -First 1
+    $rule = $customRules | Where-Object { $_.name -eq "BlockZavaAttackHeader" } | Select-Object -First 1
     if (-not $rule) { return $result }
 
     $result.FoundRule = $true
@@ -272,13 +272,13 @@ function Test-ZavaCustomRule {
     }
 
     if (-not $result.BlockAction) {
-        $result.FailureDetail = "Custom rule 'Block-ZavaAttack-Header' exists but its action is not Block."
+        $result.FailureDetail = "Custom rule 'BlockZavaAttackHeader' exists but its action is not Block."
     }
     elseif (-not $result.Enabled) {
-        $result.FailureDetail = "Custom rule 'Block-ZavaAttack-Header' exists but is disabled."
+        $result.FailureDetail = "Custom rule 'BlockZavaAttackHeader' exists but is disabled."
     }
     elseif (-not $result.HeaderMatch) {
-        $result.FailureDetail = "Custom rule 'Block-ZavaAttack-Header' does not match request header X-Zava-Attack equal to true with a non-negated Equal condition."
+        $result.FailureDetail = "Custom rule 'BlockZavaAttackHeader' does not match request header X-Zava-Attack equal to true with a non-negated Equal condition."
     }
     else {
         $result.FailureDetail = $null
@@ -298,7 +298,7 @@ function Invoke-ZavaWafLogQuery {
     $escapedAppGwId = $ApplicationGatewayId.Replace('\\', '\\\\').Replace('"', '\"')
     $query = @"
 let appGwId = tolower("$escapedAppGwId");
-let ruleName = "Block-ZavaAttack-Header";
+let ruleName = "BlockZavaAttackHeader";
 let Empty = datatable(TimeGenerated:datetime, Schema:string, ActionText:string, RuleText:string, DetailText:string)[];
 union isfuzzy=true
 Empty,
@@ -472,15 +472,15 @@ do {
                                             if ($logRows.Count -gt 0) {
                                                 $found = $true
                                                 $row = $logRows | Select-Object -First 1
-                                                $ruleText = if ([string]::IsNullOrWhiteSpace([string]$row.RuleText)) { "Block-ZavaAttack-Header" } else { [string]$row.RuleText }
-                                                $messageDetail = "WAF policy '$($policyResource.Name)' is associated with Application Gateway '$($appGw.Name)' and is in Prevention mode; custom rule 'Block-ZavaAttack-Header' is enabled with Block action for request header X-Zava-Attack equal to true; diagnostic setting '$($matchingDiagnostic.Name)' is attached to the Application Gateway resource and sends ApplicationGatewayFirewallLog and ApplicationGatewayAccessLog to workspace '$($workspace.Name)'; the gateway probe returned HTTP 403; Log Analytics table '$($row.Schema)' contains a blocked firewall event naming custom rule '$ruleText'."
+                                                $ruleText = if ([string]::IsNullOrWhiteSpace([string]$row.RuleText)) { "BlockZavaAttackHeader" } else { [string]$row.RuleText }
+                                                $messageDetail = "WAF policy '$($policyResource.Name)' is associated with Application Gateway '$($appGw.Name)' and is in Prevention mode; custom rule 'BlockZavaAttackHeader' is enabled with Block action for request header X-Zava-Attack equal to true; diagnostic setting '$($matchingDiagnostic.Name)' is attached to the Application Gateway resource and sends ApplicationGatewayFirewallLog and ApplicationGatewayAccessLog to workspace '$($workspace.Name)'; the gateway probe returned HTTP 403; Log Analytics table '$($row.Schema)' contains a blocked firewall event naming custom rule '$ruleText'."
                                             }
                                             else {
                                                 if ($queryError) {
-                                                    $lastFailure = "WAF probe returned HTTP 403, but the Log Analytics query for 'Block-ZavaAttack-Header' failed. This can occur while Application Gateway WAF logs are still being ingested. Query error: $queryError"
+                                                    $lastFailure = "WAF probe returned HTTP 403, but the Log Analytics query for 'BlockZavaAttackHeader' failed. This can occur while Application Gateway WAF logs are still being ingested. Query error: $queryError"
                                                 }
                                                 else {
-                                                    $lastFailure = "WAF probe returned HTTP 403, but no ApplicationGatewayFirewallLog event naming 'Block-ZavaAttack-Header' was found in workspace '$($workspace.Name)' in the last 6 hours. Application Gateway logs can be delayed by Azure Monitor ingestion; confirm diagnostics were enabled before the block test, wait a few minutes, and retry."
+                                                    $lastFailure = "WAF probe returned HTTP 403, but no ApplicationGatewayFirewallLog event naming 'BlockZavaAttackHeader' was found in workspace '$($workspace.Name)' in the last 6 hours. Application Gateway logs can be delayed by Azure Monitor ingestion; confirm diagnostics were enabled before the block test, wait a few minutes, and retry."
                                                 }
                                             }
                                         }

@@ -8,7 +8,7 @@ Zava Retail is no longer relying on unmanaged local secret material, but the sto
 
 ## Overview
 
-You will deploy the Application Gateway yourself into the empty `appgw-subnet`, configure it to route HTTP traffic to the VM private IP, associate a WAF policy in **Prevention** mode, and add a custom block rule named `Block-ZavaAttack-Header`. The sequence matters: first make normal traffic work through the gateway, then enable diagnostics on the **Application Gateway resource itself**, and only after diagnostics are saved generate the WAF block event.
+You will deploy the Application Gateway yourself into the empty `appgw-subnet`, configure it to route HTTP traffic to the VM private IP, associate a WAF policy in **Prevention** mode, and add a custom block rule named `BlockZavaAttackHeader`. The sequence matters: first make normal traffic work through the gateway, then enable diagnostics on the **Application Gateway resource itself**, and only after diagnostics are saved generate the WAF block event.
 
 ## Objectives
 
@@ -115,24 +115,35 @@ In this task, you will create the WAF policy in Prevention mode and configure th
      --state Enabled
    ```
 
-3. Create the mandatory custom rule named `Block-ZavaAttack-Header`. It blocks requests when request header `X-Zava-Attack` equals `true`.
+3. Create the mandatory custom rule named `BlockZavaAttackHeader`. It blocks requests when request header `X-Zava-Attack` equals `true`.
+
+   > [!Important]
+   > The rule and its match condition must be created in a single update. Azure rejects a custom rule that has no match condition, so the rule cannot be created first and given its condition afterwards. Custom rule names may only contain letters and numbers.
 
    ```bash
-   az network application-gateway waf-policy custom-rule create \
-     --resource-group "$RG" \
-     --policy-name wafpol-zava \
-     --name Block-ZavaAttack-Header \
-     --priority 10 \
-     --rule-type MatchRule \
-     --action Block
+   POLICY_ID=$(az network application-gateway waf-policy show -g "$RG" -n wafpol-zava --query id -o tsv)
 
-   az network application-gateway waf-policy custom-rule match-condition add \
-     --resource-group "$RG" \
-     --policy-name wafpol-zava \
-     --name Block-ZavaAttack-Header \
-     --match-variables RequestHeaders.X-Zava-Attack \
-     --operator Equal \
-     --values true
+   az rest --method get \
+     --url "https://management.azure.com${POLICY_ID}?api-version=2024-05-01" > wafpol.json
+
+   jq '.properties.customRules = [{
+     "name": "BlockZavaAttackHeader",
+     "priority": 10,
+     "ruleType": "MatchRule",
+     "action": "Block",
+     "state": "Enabled",
+     "matchConditions": [{
+       "matchVariables": [{"variableName": "RequestHeaders", "selector": "X-Zava-Attack"}],
+       "operator": "Equal",
+       "negationConditon": false,
+       "matchValues": ["true"],
+       "transforms": []
+     }]
+   }]' wafpol.json > wafpol-with-rule.json
+
+   az rest --method put \
+     --url "https://management.azure.com${POLICY_ID}?api-version=2024-05-01" \
+     --body @wafpol-with-rule.json
    ```
 
 4. Verify the policy mode and custom rule.
@@ -318,7 +329,7 @@ In this task, you will configure the diagnostic setting on the **Application Gat
 
 ## Task 6: Generate the custom-rule block and query WAF evidence
 
-In this task, you will send the first malicious-header test after diagnostics are enabled, confirm the block, and query Log Analytics for a firewall record that names `Block-ZavaAttack-Header` specifically.
+In this task, you will send the first malicious-header test after diagnostics are enabled, confirm the block, and query Log Analytics for a firewall record that names `BlockZavaAttackHeader` specifically.
 
 1. Send a normal request again to keep an access-log comparison point.
 
@@ -352,7 +363,7 @@ In this task, you will send the first malicious-header test after diagnostics ar
        | where TimeGenerated > ago(1h)
        | extend RuleText=tostring(column_ifexists('RuleId', ''))
        | extend DetailText=strcat(tostring(column_ifexists('Message', '')), ' ', tostring(column_ifexists('DetailedMessage', '')), ' ', tostring(column_ifexists('DetailedData', '')), ' ', tostring(column_ifexists('FileDetails', '')))
-       | where RuleText == 'Block-ZavaAttack-Header' or DetailText has 'Block-ZavaAttack-Header'
+       | where RuleText == 'BlockZavaAttackHeader' or DetailText has 'BlockZavaAttackHeader'
        | project TimeGenerated,
            Action=tostring(column_ifexists('Action', '')),
            RuleId=RuleText,
@@ -378,7 +389,7 @@ In this task, you will send the first malicious-header test after diagnostics ar
        | where Category == 'ApplicationGatewayFirewallLog'
        | extend RuleText=tostring(column_ifexists('ruleId_s', ''))
        | extend DetailText=strcat(tostring(column_ifexists('message_s', '')), ' ', tostring(column_ifexists('details_message_s', '')), ' ', tostring(column_ifexists('details_data_s', '')), ' ', tostring(column_ifexists('details_file_s', '')))
-       | where RuleText == 'Block-ZavaAttack-Header' or DetailText has 'Block-ZavaAttack-Header'
+       | where RuleText == 'BlockZavaAttackHeader' or DetailText has 'BlockZavaAttackHeader'
        | project TimeGenerated,
            Action=tostring(column_ifexists('action_s', '')),
            RuleId=RuleText,
@@ -409,7 +420,7 @@ In this task, you will send the first malicious-header test after diagnostics ar
    <validation step="04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1"/>
 
    > [!Important]
-   > An HTTP 403 alone is not sufficient evidence for this lab. You must also have a firewall log record that identifies `Block-ZavaAttack-Header` specifically.
+   > An HTTP 403 alone is not sufficient evidence for this lab. You must also have a firewall log record that identifies `BlockZavaAttackHeader` specifically.
 
 ## Task 7: Remove direct VM public HTTP exposure while preserving gateway access
 
@@ -503,4 +514,4 @@ In this task, you will stop internet users from bypassing the gateway and reachi
 
 ## Summary
 
-You deployed Application Gateway WAF_v2 into `appgw-subnet`, associated a WAF policy in Prevention mode, created the deterministic `Block-ZavaAttack-Header` custom rule, confirmed normal gateway traffic, enabled `ApplicationGatewayFirewallLog` and `ApplicationGatewayAccessLog` on the Application Gateway resource before the block test, and proved the custom-rule block in Log Analytics. You also removed the direct VM public HTTP path so public storefront traffic now flows through the WAF-protected gateway.
+You deployed Application Gateway WAF_v2 into `appgw-subnet`, associated a WAF policy in Prevention mode, created the deterministic `BlockZavaAttackHeader` custom rule, confirmed normal gateway traffic, enabled `ApplicationGatewayFirewallLog` and `ApplicationGatewayAccessLog` on the Application Gateway resource before the block test, and proved the custom-rule block in Log Analytics. You also removed the direct VM public HTTP path so public storefront traffic now flows through the WAF-protected gateway.

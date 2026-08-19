@@ -2,7 +2,7 @@
 
 # Hardening Cloud-Native Apps with Secrets, Identity, and WAF
 
-Assess outcomes rather than command-line conformity. Resource names may vary except for `zava-web-vm`, `ZavaAppConnectionString`, `Block-ZavaAttack-Header`, and `zava-app-legacy-id`. The connection string is a sample security artifact: **there is no database and no database test is valid**.
+Assess outcomes rather than command-line conformity. Resource names may vary except for `zava-web-vm`, `ZavaAppConnectionString`, `BlockZavaAttackHeader`, and `zava-app-legacy-id`. The connection string is a sample security artifact: **there is no database and no database test is valid**.
 
 Set assessment variables to discovered resource names. Prefer locating the resource group from the known VM or legacy identity rather than by a broad name match:
 
@@ -134,7 +134,7 @@ az network application-gateway show-backend-health -g "$RG" -n "$AGW" -o json
 
 ### Task 2.2 — Configure Prevention and the exact custom rule
 
-**Answer / expected end state:** Associated policy is in Prevention mode. `Block-ZavaAttack-Header` has Block action and matches request header `X-Zava-Attack` equal to `true`.
+**Answer / expected end state:** Associated policy is in Prevention mode. `BlockZavaAttackHeader` has Block action and matches request header `X-Zava-Attack` equal to `true`.
 
 ```bash
 POLICY_ID=$(az network application-gateway show -g "$RG" -n "$AGW" --query firewallPolicy.id -o tsv)
@@ -167,7 +167,7 @@ az monitor diagnostic-settings list --resource "$AGW_ID" \
 
 ### Task 2.4 — Prove enforcement and telemetry
 
-**Answer / expected end state:** A post-diagnostic request through the gateway with `X-Zava-Attack: true` is blocked, normally HTTP 403. After ingestion latency, a firewall event names `Block-ZavaAttack-Header`.
+**Answer / expected end state:** A post-diagnostic request through the gateway with `X-Zava-Attack: true` is blocked, normally HTTP 403. After ingestion latency, a firewall event names `BlockZavaAttackHeader`.
 
 ```bash
 AGW_PIP_ID=$(az network application-gateway show -g "$RG" -n "$AGW" --query 'frontendIPConfigurations[0].publicIPAddress.id' -o tsv)
@@ -185,7 +185,7 @@ union isfuzzy=true
  (AzureDiagnostics | where Category == 'ApplicationGatewayFirewallLog'
   | project TimeGenerated, Action=action_s, RuleId=ruleId_s, Message=message_s)
 | where TimeGenerated > ago(30m)
-| where RuleId == 'Block-ZavaAttack-Header' or Message has 'Block-ZavaAttack-Header'
+| where RuleId == 'BlockZavaAttackHeader' or Message has 'BlockZavaAttackHeader'
 | order by TimeGenerated desc" -o table
 ```
 
@@ -297,7 +297,7 @@ az keyvault secret list-versions --vault-name "$KV" --name ZavaAppConnectionStri
 
 ## Final decision
 
-Award completion only if the vault and gateway were learner-created; diagnostics preceded the accepted block test; the firewall event names `Block-ZavaAttack-Header`; `Allow-HTTP-Direct-Internet` is deleted and direct VM HTTP is unavailable; and identities have exactly these vault-scoped responsibilities:
+Award completion only if the vault and gateway were learner-created; diagnostics preceded the accepted block test; the firewall event names `BlockZavaAttackHeader`; `Allow-HTTP-Direct-Internet` is deleted and direct VM HTTP is unavailable; and identities have exactly these vault-scoped responsibilities:
 
 - Learner: **Key Vault Secrets Officer**.
 - VM system-assigned identity: **Key Vault Secrets User**.

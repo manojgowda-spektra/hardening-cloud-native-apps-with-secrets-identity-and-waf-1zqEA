@@ -58,9 +58,9 @@ By the end of the lab, learners must demonstrate that:
 - The VM system-assigned managed identity is enabled and has only the built-in Key Vault Secrets User role scoped to the vault.
 - The storefront resolves the secret through the VM managed identity and reports `KeyVault` on `/config-status` without exposing the secret value.
 - A learner-created Application Gateway WAF_v2 fronts the storefront from `appgw-subnet`.
-- A WAF policy is associated, set to Prevention mode, and includes custom rule `Block-ZavaAttack-Header` to block `X-Zava-Attack: true`.
+- A WAF policy is associated, set to Prevention mode, and includes custom rule `BlockZavaAttackHeader` to block `X-Zava-Attack: true`.
 - Diagnostic settings are configured on the Application Gateway resource and send `ApplicationGatewayFirewallLog` and `ApplicationGatewayAccessLog` to the provided Log Analytics workspace.
-- Log Analytics contains a blocked-request record identifying `Block-ZavaAttack-Header`.
+- Log Analytics contains a blocked-request record identifying `BlockZavaAttackHeader`.
 - Direct public HTTP access to the VM is removed or blocked while gateway-to-backend connectivity remains functional.
 - `zava-app-legacy-id` no longer has Contributor at resource-group scope and has only built-in Key Vault Reader scoped to the vault.
 - The secret is rotated by the learner's own Secrets Officer access and the storefront remains healthy.
@@ -83,7 +83,7 @@ Application Gateway is absent at lab start and is created by the learner. The re
 - Subnet: `appgw-subnet`
 - Backend: storefront VM private IP
 - WAF policy mode: Prevention
-- Custom rule: `Block-ZavaAttack-Header`
+- Custom rule: `BlockZavaAttackHeader`
 - Rule match: request header `X-Zava-Attack` equals `true`
 - Rule action: Block
 

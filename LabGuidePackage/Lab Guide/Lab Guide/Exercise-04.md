@@ -146,7 +146,7 @@ In this task, you will prove that normal public traffic works through Applicatio
      -o table
    ```
 
-2. Confirm the WAF policy is in **Prevention** mode and contains the custom rule `Block-ZavaAttack-Header` with a **Block** action.
+2. Confirm the WAF policy is in **Prevention** mode and contains the custom rule `BlockZavaAttackHeader` with a **Block** action.
 
    ```bash
    WAF_POLICY_ID="$(az network application-gateway waf-policy show -g "$RG" -n "$WAF_POLICY_NAME" --query id -o tsv)"
@@ -187,7 +187,7 @@ In this task, you will prove that normal public traffic works through Applicatio
 
 ## Task 4: Validate Application Gateway diagnostics and Log Analytics evidence
 
-In this task, you will prove that the block is visible in Application Gateway firewall telemetry and that the log record names `Block-ZavaAttack-Header` specifically.
+In this task, you will prove that the block is visible in Application Gateway firewall telemetry and that the log record names `BlockZavaAttackHeader` specifically.
 
 1. Confirm diagnostic settings are attached to the **Application Gateway** resource and send both required categories to the lab Log Analytics workspace.
 
@@ -206,7 +206,7 @@ In this task, you will prove that the block is visible in Application Gateway fi
 
    ```bash
    az monitor log-analytics query --workspace "$LAW_CUSTOMER_ID" --timespan PT1H \
-     --analytics-query "AGWFirewallLogs | extend RuleIdValue = tostring(column_ifexists(\"RuleId\", \"\")), MessageValue = tostring(column_ifexists(\"Message\", \"\")), DetailedMessageValue = tostring(column_ifexists(\"DetailedMessage\", \"\")), DetailedDataValue = tostring(column_ifexists(\"DetailedData\", \"\")), FileDetailsValue = tostring(column_ifexists(\"FileDetails\", \"\")), ActionValue = tostring(column_ifexists(\"Action\", \"\")), ClientIpValue = tostring(column_ifexists(\"ClientIp\", \"\")), RequestUriValue = tostring(column_ifexists(\"RequestUri\", \"\")), HostnameValue = tostring(column_ifexists(\"Hostname\", \"\")) | where ActionValue has 'Blocked' | where RuleIdValue == 'Block-ZavaAttack-Header' or MessageValue has 'Block-ZavaAttack-Header' or DetailedMessageValue has 'Block-ZavaAttack-Header' or DetailedDataValue has 'Block-ZavaAttack-Header' or FileDetailsValue has 'Block-ZavaAttack-Header' | project TimeGenerated, Action = ActionValue, RuleId = RuleIdValue, Message = MessageValue, DetailedMessage = DetailedMessageValue, DetailedData = DetailedDataValue, FileDetails = FileDetailsValue, ClientIp = ClientIpValue, RequestUri = RequestUriValue, Hostname = HostnameValue | order by TimeGenerated desc | take 10" \
+     --analytics-query "AGWFirewallLogs | extend RuleIdValue = tostring(column_ifexists(\"RuleId\", \"\")), MessageValue = tostring(column_ifexists(\"Message\", \"\")), DetailedMessageValue = tostring(column_ifexists(\"DetailedMessage\", \"\")), DetailedDataValue = tostring(column_ifexists(\"DetailedData\", \"\")), FileDetailsValue = tostring(column_ifexists(\"FileDetails\", \"\")), ActionValue = tostring(column_ifexists(\"Action\", \"\")), ClientIpValue = tostring(column_ifexists(\"ClientIp\", \"\")), RequestUriValue = tostring(column_ifexists(\"RequestUri\", \"\")), HostnameValue = tostring(column_ifexists(\"Hostname\", \"\")) | where ActionValue has 'Blocked' | where RuleIdValue == 'BlockZavaAttackHeader' or MessageValue has 'BlockZavaAttackHeader' or DetailedMessageValue has 'BlockZavaAttackHeader' or DetailedDataValue has 'BlockZavaAttackHeader' or FileDetailsValue has 'BlockZavaAttackHeader' | project TimeGenerated, Action = ActionValue, RuleId = RuleIdValue, Message = MessageValue, DetailedMessage = DetailedMessageValue, DetailedData = DetailedDataValue, FileDetails = FileDetailsValue, ClientIp = ClientIpValue, RequestUri = RequestUriValue, Hostname = HostnameValue | order by TimeGenerated desc | take 10" \
      -o table
    ```
 
@@ -214,14 +214,14 @@ In this task, you will prove that the block is visible in Application Gateway fi
 
    ```bash
    az monitor log-analytics query --workspace "$LAW_CUSTOMER_ID" --timespan PT1H \
-     --analytics-query "AzureDiagnostics | extend ResourceProviderValue = tostring(column_ifexists(\"ResourceProvider\", \"\")), CategoryValue = tostring(column_ifexists(\"Category\", \"\")), ActionValue = tostring(column_ifexists(\"action_s\", column_ifexists(\"Action\", \"\"))), RuleIdValue = tostring(column_ifexists(\"ruleId_s\", column_ifexists(\"RuleId\", \"\"))), MessageValue = tostring(column_ifexists(\"message_s\", column_ifexists(\"Message\", \"\"))), DetailedMessageValue = tostring(column_ifexists(\"details_message_s\", column_ifexists(\"DetailedMessage\", \"\"))), DetailedDataValue = tostring(column_ifexists(\"details_data_s\", column_ifexists(\"DetailedData\", \"\"))), FileDetailsValue = tostring(column_ifexists(\"details_file_s\", column_ifexists(\"FileDetails\", \"\"))), ClientIpValue = tostring(column_ifexists(\"clientIp_s\", column_ifexists(\"ClientIp\", \"\"))), RequestUriValue = tostring(column_ifexists(\"requestUri_s\", column_ifexists(\"RequestUri\", \"\"))), HostnameValue = tostring(column_ifexists(\"hostname_s\", column_ifexists(\"Hostname\", \"\"))) | where ResourceProviderValue =~ 'MICROSOFT.NETWORK' and CategoryValue == 'ApplicationGatewayFirewallLog' | where ActionValue has 'Blocked' | where RuleIdValue == 'Block-ZavaAttack-Header' or MessageValue has 'Block-ZavaAttack-Header' or DetailedMessageValue has 'Block-ZavaAttack-Header' or DetailedDataValue has 'Block-ZavaAttack-Header' or FileDetailsValue has 'Block-ZavaAttack-Header' | project TimeGenerated, Action = ActionValue, RuleId = RuleIdValue, Message = MessageValue, DetailedMessage = DetailedMessageValue, DetailedData = DetailedDataValue, FileDetails = FileDetailsValue, ClientIp = ClientIpValue, RequestUri = RequestUriValue, Hostname = HostnameValue | order by TimeGenerated desc | take 10" \
+     --analytics-query "AzureDiagnostics | extend ResourceProviderValue = tostring(column_ifexists(\"ResourceProvider\", \"\")), CategoryValue = tostring(column_ifexists(\"Category\", \"\")), ActionValue = tostring(column_ifexists(\"action_s\", column_ifexists(\"Action\", \"\"))), RuleIdValue = tostring(column_ifexists(\"ruleId_s\", column_ifexists(\"RuleId\", \"\"))), MessageValue = tostring(column_ifexists(\"message_s\", column_ifexists(\"Message\", \"\"))), DetailedMessageValue = tostring(column_ifexists(\"details_message_s\", column_ifexists(\"DetailedMessage\", \"\"))), DetailedDataValue = tostring(column_ifexists(\"details_data_s\", column_ifexists(\"DetailedData\", \"\"))), FileDetailsValue = tostring(column_ifexists(\"details_file_s\", column_ifexists(\"FileDetails\", \"\"))), ClientIpValue = tostring(column_ifexists(\"clientIp_s\", column_ifexists(\"ClientIp\", \"\"))), RequestUriValue = tostring(column_ifexists(\"requestUri_s\", column_ifexists(\"RequestUri\", \"\"))), HostnameValue = tostring(column_ifexists(\"hostname_s\", column_ifexists(\"Hostname\", \"\"))) | where ResourceProviderValue =~ 'MICROSOFT.NETWORK' and CategoryValue == 'ApplicationGatewayFirewallLog' | where ActionValue has 'Blocked' | where RuleIdValue == 'BlockZavaAttackHeader' or MessageValue has 'BlockZavaAttackHeader' or DetailedMessageValue has 'BlockZavaAttackHeader' or DetailedDataValue has 'BlockZavaAttackHeader' or FileDetailsValue has 'BlockZavaAttackHeader' | project TimeGenerated, Action = ActionValue, RuleId = RuleIdValue, Message = MessageValue, DetailedMessage = DetailedMessageValue, DetailedData = DetailedDataValue, FileDetails = FileDetailsValue, ClientIp = ClientIpValue, RequestUri = RequestUriValue, Hostname = HostnameValue | order by TimeGenerated desc | take 10" \
      -o table
    ```
 
-5. Capture a row that shows a blocked action and names `Block-ZavaAttack-Header`. If neither query returns a row, repeat the WAF test request from Task 3, wait 5 to 10 minutes, and rerun both queries.
+5. Capture a row that shows a blocked action and names `BlockZavaAttackHeader`. If neither query returns a row, repeat the WAF test request from Task 3, wait 5 to 10 minutes, and rerun both queries.
 
 > [!Important]
-> An HTTP 403 alone is not enough final evidence. You need a matching Application Gateway firewall log entry that identifies `Block-ZavaAttack-Header`; otherwise you have not proven which control blocked the request.
+> An HTTP 403 alone is not enough final evidence. You need a matching Application Gateway firewall log entry that identifies `BlockZavaAttackHeader`; otherwise you have not proven which control blocked the request.
 
 Run the canonical validation script `04-task-prevention-rule-diagnostics-and-logged-custom-rule-block.ps1` for Prevention mode, the custom WAF rule, Application Gateway diagnostics, and the logged block.
 
@@ -302,7 +302,7 @@ In this task, you will produce a concise report that ties the technical evidence
    | Secret rotation | ZavaAppConnectionString has at least two enabled versions; app remains healthy | Proves rotation can occur without rebuilding the app |
    | Application Gateway WAF_v2 entry point | Normal gateway /health request succeeds | Places public ingress behind a managed edge control |
    | Custom WAF block | X-Zava-Attack: true returns blocked response in Prevention mode | Enforces deterministic application-specific blocking |
-   | WAF telemetry | Log Analytics firewall row names Block-ZavaAttack-Header | Proves the edge control, not an unrelated component, blocked the request |
+   | WAF telemetry | Log Analytics firewall row names BlockZavaAttackHeader | Proves the edge control, not an unrelated component, blocked the request |
    | Direct VM exposure removed | Direct VM HTTP is unreachable or no VM public IP remains | Prevents bypass of Application Gateway and WAF |
    | Legacy identity least privilege | No RG Contributor; only Key Vault Reader at vault scope | Preserves metadata visibility without a route to secret values |
 
@@ -321,4 +321,4 @@ In this task, you will produce a concise report that ties the technical evidence
 
 ## Summary
 
-You validated the final defense-in-depth posture for Zava Retail. You proved that the exact secret `ZavaAppConnectionString` is governed and rotated in Key Vault, the application uses VM managed identity, Application Gateway WAF_v2 is the public entry point, the custom `Block-ZavaAttack-Header` rule blocks in Prevention mode with Log Analytics evidence, direct VM HTTP access is removed, and `zava-app-legacy-id` has only metadata-only Key Vault Reader access.
+You validated the final defense-in-depth posture for Zava Retail. You proved that the exact secret `ZavaAppConnectionString` is governed and rotated in Key Vault, the application uses VM managed identity, Application Gateway WAF_v2 is the public entry point, the custom `BlockZavaAttackHeader` rule blocks in Prevention mode with Log Analytics evidence, direct VM HTTP access is removed, and `zava-app-legacy-id` has only metadata-only Key Vault Reader access.

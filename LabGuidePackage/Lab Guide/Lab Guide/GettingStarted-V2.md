@@ -46,7 +46,7 @@ When you create learner-owned resources, use the naming conventions in this guid
 | Required secret | `ZavaAppConnectionString` |
 | Learner-created Application Gateway | `agw-zava-waf` |
 | Learner-created WAF policy | `wafpol-zava` |
-| Required WAF custom rule | `Block-ZavaAttack-Header` |
+| Required WAF custom rule | `BlockZavaAttackHeader` |
 | WAF test header | `X-Zava-Attack: true` |
 | Storefront health endpoint | `/health` |
 | Storefront source endpoint | `/config-status` |
@@ -121,7 +121,7 @@ This lab has four exercises:
    Create an Azure RBAC-mode Key Vault, assign your own lab account **Key Vault Secrets Officer**, store `ZavaAppConnectionString`, enable the VM system-assigned identity, assign it **Key Vault Secrets User**, and switch the app from local plaintext to Key Vault retrieval.
 
 2. **Deploy WAF_v2, enable diagnostics, then prove the block**  
-   Deploy Application Gateway WAF_v2 in `appgw-subnet`, associate a WAF policy in **Prevention** mode, create custom rule `Block-ZavaAttack-Header`, enable gateway diagnostics before testing, and prove the block appears in Log Analytics.
+   Deploy Application Gateway WAF_v2 in `appgw-subnet`, associate a WAF policy in **Prevention** mode, create custom rule `BlockZavaAttackHeader`, enable gateway diagnostics before testing, and prove the block appears in Log Analytics.
 
 3. **Remove excessive access and rotate the governed secret**  
    Remove the legacy identity’s resource-group Contributor assignment, assign it only **Key Vault Reader** at vault scope, and rotate `ZavaAppConnectionString` using your own Secrets Officer access.
@@ -172,7 +172,7 @@ This lab is successful only when your evidence shows the full chain of controls 
 - Application Gateway WAF_v2 fronts the storefront.
 - Normal gateway traffic succeeds.
 - Requests containing `X-Zava-Attack: true` are blocked.
-- Log Analytics contains a WAF firewall event naming `Block-ZavaAttack-Header`.
+- Log Analytics contains a WAF firewall event naming `BlockZavaAttackHeader`.
 - Direct public HTTP access to the VM is no longer available.
 - `zava-app-legacy-id` no longer has resource-group Contributor and has only **Key Vault Reader** at vault scope.
 - The secret has at least two enabled versions after rotation.
